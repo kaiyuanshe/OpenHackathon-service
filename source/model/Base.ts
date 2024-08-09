@@ -4,6 +4,7 @@ import {
     IsInt,
     IsOptional,
     IsString,
+    IsUrl,
     Min
 } from 'class-validator';
 import { NewData } from 'mobx-restful';
@@ -53,4 +54,15 @@ export abstract class Base {
     @IsOptional()
     @UpdateDateColumn()
     updatedAt: string;
+}
+
+export class Media {
+    @IsString()
+    name: string;
+
+    @IsString()
+    description: string;
+
+    @IsUrl()
+    uri: string;
 }

@@ -1,6 +1,6 @@
 {
     "name": "@kaiyuanshe/openhackathon-service",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "license": "LGPL-3.0",
     "author": "shiy2008@gmail.com",
     "description": "RESTful API service scaffold based on Node.js & TypeScript",

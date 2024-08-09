@@ -1,8 +1,8 @@
-# openhackathon-service
+# Open Hackathon Platform - API service
 
-[REST][1]ful API service scaffold based on [Node.js][2] & [TypeScript][3]
+[REST][1]ful API service scaffold based on [Node.js][2] & [TypeScript][3], which is a reimplement of [OHP API service v4](https://github.com/kaiyuanshe/open-hackathon-api).
 
-[![Deploy to Production environment](https://github.com/kaiyuanshe/openhackathon-service/actions/workflows/deploy-production.yml/badge.svg)][4]
+[![Deploy to Production environment](https://github.com/kaiyuanshe/OpenHackathon-service/actions/workflows/deploy-production.yml/badge.svg)][4]
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)][5]
 
@@ -132,10 +132,10 @@ git push origin master --tags
 [1]: https://en.wikipedia.org/wiki/Representational_state_transfer
 [2]: https://nodejs.org/
 [3]: https://www.typescriptlang.org/
-[4]: https://github.com/kaiyuanshe/openhackathon-service/actions/workflows/deploy-production.yml
+[4]: https://github.com/kaiyuanshe/OpenHackathon-service/actions/workflows/deploy-production.yml
 [5]: https://render.com/deploy
 [6]: https://codespaces.new/kaiyuanshe/openhackathon-service
-[7]: https://gitpod.io/?autostart=true#https://github.com/kaiyuanshe/openhackathon-service
+[7]: https://gitpod.io/?autostart=true#https://github.com/kaiyuanshe/OpenHackathon-service
 [8]: https://koajs.com/
 [9]: https://github.com/typestack/routing-controllers
 [10]: https://github.com/typestack/class-transformer
@@ -148,6 +148,6 @@ git push origin master --tags
 [17]: https://code.visualstudio.com/
 [18]: https://github.com/new?template_name=openhackathon-service&template_owner=idea2app
 [19]: https://github.com/kaiyuanshe/kaiyuanshe.github.io/blob/bb4675a56bf1d6b207231313da5ed0af7cf0ebd6/.github/workflows/pull-request.yml#L32-L56
-[20]: https://github.com/kaiyuanshe/openhackathon-service/issues/new/choose
-[21]: https://github.com/kaiyuanshe/openhackathon-service/projects
+[20]: https://github.com/kaiyuanshe/OpenHackathon-service/issues/new/choose
+[21]: https://github.com/kaiyuanshe/OpenHackathon-service/projects
 [22]: https://github.com/settings/tokens

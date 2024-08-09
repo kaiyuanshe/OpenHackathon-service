@@ -9,7 +9,7 @@ import {
     Min,
     ValidateNested
 } from 'class-validator';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, VirtualColumn } from 'typeorm';
 
 import { BaseFilter, InputData, ListChunk, Media } from './Base';
 import { UserBase } from './User';
@@ -59,7 +59,7 @@ export class Hackathon extends UserBase {
     @IsEnum(HackathonStatus)
     @IsOptional()
     @Column({
-        type: 'enum',
+        type: 'simple-enum',
         enum: HackathonStatus,
         default: HackathonStatus.Planning
     })
@@ -81,6 +81,12 @@ export class Hackathon extends UserBase {
     @Column({ nullable: true })
     maxEnrollment?: number;
 
+    @IsInt()
+    @Min(0)
+    @VirtualColumn({
+        query: alias =>
+            `SELECT COUNT(*) FROM "Enrollment" WHERE hackathonId = ${alias}.id`
+    })
     enrollment: number;
 
     @IsDateString()

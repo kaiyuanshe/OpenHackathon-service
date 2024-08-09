@@ -29,42 +29,6 @@ import { ensureAdmin, searchConditionOf } from '../utility';
 export class HackathonController {
     store = dataSource.getRepository(Hackathon);
 
-    @Get()
-    @ResponseSchema(HackathonListChunk)
-    async getList(
-        @QueryParams()
-        { keywords, pageSize, pageIndex, ...filter }: HackathonFilter
-    ) {
-        const where = keywords
-            ? searchConditionOf<Hackathon>(keywords, [
-                  'name',
-                  'displayName',
-                  'ribbon',
-                  'summary',
-                  'detail',
-                  'location',
-                  'tags'
-              ])
-            : isEmpty(filter)
-              ? undefined
-              : filter;
-
-        const [list, count] = await this.store.findAndCount({
-            where,
-            skip: pageSize * (pageIndex - 1),
-            take: pageSize
-        });
-
-        return { list, count };
-    }
-
-    @Post()
-    @Authorized()
-    @ResponseSchema(Hackathon)
-    createOne(@CurrentUser() createdBy: User, @Body() hackathon: Hackathon) {
-        return this.store.save({ ...hackathon, createdBy });
-    }
-
     @Patch('/:name')
     @Authorized()
     @ResponseSchema(Hackathon)
@@ -103,5 +67,41 @@ export class HackathonController {
         ensureAdmin(deletedBy, old.createdBy);
 
         await this.store.delete(old.id);
+    }
+
+    @Post()
+    @Authorized()
+    @ResponseSchema(Hackathon)
+    createOne(@CurrentUser() createdBy: User, @Body() hackathon: Hackathon) {
+        return this.store.save({ ...hackathon, createdBy });
+    }
+
+    @Get()
+    @ResponseSchema(HackathonListChunk)
+    async getList(
+        @QueryParams()
+        { keywords, pageSize, pageIndex, ...filter }: HackathonFilter
+    ) {
+        const where = keywords
+            ? searchConditionOf<Hackathon>(keywords, [
+                  'name',
+                  'displayName',
+                  'ribbon',
+                  'summary',
+                  'detail',
+                  'location',
+                  'tags'
+              ])
+            : isEmpty(filter)
+              ? undefined
+              : filter;
+
+        const [list, count] = await this.store.findAndCount({
+            where,
+            skip: pageSize * (pageIndex - 1),
+            take: pageSize
+        });
+
+        return { list, count };
     }
 }

@@ -15,10 +15,10 @@ services:
         networks:
             - idea2app
         restart: always
-    rest-node-ts:
+    openhackathon-service:
         depends_on:
             - postgres
-        image: idea2app/rest-node-ts
+        image: kaiyuanshe/openhackathon-service
         environment:
             - NODE_ENV=production
             - DATABASE_URL=postgres://postgres:${APP_SECRET}@postgres:5432/postgres
@@ -40,7 +40,7 @@ services:
         restart: always
     caddy:
         depends_on:
-            - rest-node-ts
+            - openhackathon-service
         image: caddy
         ports:
             - 80:80
@@ -48,4 +48,4 @@ services:
         networks:
             - idea2app
         restart: always
-        command: caddy reverse-proxy --from example.com --to rest-node-ts:8080
+        command: caddy reverse-proxy --from example.com --to openhackathon-service:8080

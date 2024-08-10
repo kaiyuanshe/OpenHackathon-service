@@ -89,6 +89,7 @@ export class EnrollmentController {
                 : status
                   ? { status }
                   : undefined,
+            relations: ['createdBy'],
             skip: pageSize * (pageIndex - 1),
             take: pageSize
         });

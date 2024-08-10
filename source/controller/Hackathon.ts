@@ -18,6 +18,7 @@ import { isEmpty } from 'web-utility';
 
 import {
     dataSource,
+    Enrollment,
     Hackathon,
     HackathonFilter,
     HackathonListChunk,
@@ -28,6 +29,7 @@ import { ensureAdmin, searchConditionOf } from '../utility';
 @JsonController('/hackathon')
 export class HackathonController {
     store = dataSource.getRepository(Hackathon);
+    enrollment = dataSource.getRepository(Enrollment);
 
     @Patch('/:name')
     @Authorized()
@@ -49,8 +51,22 @@ export class HackathonController {
     @Get('/:name')
     @ResponseSchema(Hackathon)
     @OnNull(404)
-    getOne(@Param('name') name: string) {
-        return this.store.findOne({ where: { name } });
+    async getOne(@CurrentUser() user: User, @Param('name') name: string) {
+        const hackathon = await this.store.findOne({
+            where: { name },
+            relations: ['createdBy', 'enrollment']
+        });
+        const enrollment =
+            user &&
+            (await this.enrollment.findOne({
+                where: { createdBy: { id: user.id } }
+            }));
+        hackathon.roles = {
+            isAdmin: user.id === hackathon.createdBy.id,
+            isJudge: false,
+            isEnrolled: !!enrollment
+        };
+        return hackathon;
     }
 
     @Delete('/:name')

@@ -26,7 +26,7 @@ import {
     UserFilter,
     UserListChunk
 } from '../model';
-import { APP_SECRET } from '../utility';
+import { APP_SECRET, searchConditionOf } from '../utility';
 
 @JsonController('/user')
 export class UserController {
@@ -116,8 +116,21 @@ export class UserController {
 
     @Get()
     @ResponseSchema(UserListChunk)
-    async getList(@QueryParams() { pageSize, pageIndex }: UserFilter) {
+    async getList(
+        @QueryParams() { gender, keywords, pageSize, pageIndex }: UserFilter
+    ) {
+        const where = keywords
+            ? searchConditionOf<User>(keywords, [
+                  'email',
+                  'mobilePhone',
+                  'name'
+              ])
+            : gender
+              ? { gender }
+              : undefined;
+
         const [list, count] = await this.store.findAndCount({
+            where,
             skip: pageSize * (pageIndex - 1),
             take: pageSize
         });

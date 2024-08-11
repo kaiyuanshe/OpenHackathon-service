@@ -10,6 +10,7 @@ import {
 import { NewData } from 'mobx-restful';
 import {
     CreateDateColumn,
+    DeleteDateColumn,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from 'typeorm';
@@ -54,6 +55,11 @@ export abstract class Base {
     @IsOptional()
     @UpdateDateColumn()
     updatedAt: string;
+
+    @IsDateString()
+    @IsOptional()
+    @DeleteDateColumn()
+    deletedAt?: string;
 }
 
 export class Media {

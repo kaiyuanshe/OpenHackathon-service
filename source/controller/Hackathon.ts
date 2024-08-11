@@ -18,6 +18,7 @@ import { isEmpty } from 'web-utility';
 
 import {
     dataSource,
+    Enrollment,
     Hackathon,
     HackathonFilter,
     HackathonListChunk,
@@ -28,6 +29,7 @@ import { ensureAdmin, searchConditionOf } from '../utility';
 @JsonController('/hackathon')
 export class HackathonController {
     store = dataSource.getRepository(Hackathon);
+    enrollment = dataSource.getRepository(Enrollment);
 
     @Patch('/:name')
     @Authorized()
@@ -37,8 +39,10 @@ export class HackathonController {
         @Param('name') name: string,
         @Body() hackathon: Hackathon
     ) {
-        const old = await this.store.findOne({ where: { name } });
-
+        const old = await this.store.findOne({
+            where: { name },
+            relations: ['createdBy']
+        });
         if (!old) throw new NotFoundError();
 
         ensureAdmin(updatedBy, old.createdBy);
@@ -49,8 +53,23 @@ export class HackathonController {
     @Get('/:name')
     @ResponseSchema(Hackathon)
     @OnNull(404)
-    getOne(@Param('name') name: string) {
-        return this.store.findOne({ where: { name } });
+    async getOne(@CurrentUser() user: User, @Param('name') name: string) {
+        const hackathon = await this.store.findOne({
+            where: { name },
+            relations: ['createdBy']
+        });
+
+        if (user) {
+            const enrollment = await this.enrollment.findOne({
+                where: { createdBy: { id: user.id } }
+            });
+            hackathon.roles = {
+                isAdmin: user.id === hackathon.createdBy.id,
+                isJudge: false,
+                isEnrolled: !!enrollment
+            };
+        }
+        return hackathon;
     }
 
     @Delete('/:name')
@@ -60,13 +79,16 @@ export class HackathonController {
         @CurrentUser() deletedBy: User,
         @Param('name') name: string
     ) {
-        const old = await this.store.findOne({ where: { name } });
-
+        const old = await this.store.findOne({
+            where: { name },
+            relations: ['createdBy']
+        });
         if (!old) throw new NotFoundError();
 
         ensureAdmin(deletedBy, old.createdBy);
 
-        await this.store.delete(old.id);
+        await this.store.save({ ...old, deletedBy });
+        await this.store.softDelete(old.id);
     }
 
     @Post()
@@ -98,6 +120,7 @@ export class HackathonController {
 
         const [list, count] = await this.store.findAndCount({
             where,
+            relations: ['createdBy'],
             skip: pageSize * (pageIndex - 1),
             take: pageSize
         });

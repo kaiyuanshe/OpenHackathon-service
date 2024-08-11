@@ -26,7 +26,7 @@ import {
     UserFilter,
     UserListChunk
 } from '../model';
-import { APP_SECRET } from '../utility';
+import { APP_SECRET, searchConditionOf } from '../utility';
 
 @JsonController('/user')
 export class UserController {
@@ -108,16 +108,29 @@ export class UserController {
         @Param('id') id: number,
         @CurrentUser() { id: ID, roles }: User
     ) {
-        if (!roles.includes(Role.Administrator) && id !== ID)
+        if (!roles.includes(Role.Administrator) || id !== ID)
             throw new ForbiddenError();
 
-        await this.store.delete(id);
+        await this.store.softDelete(id);
     }
 
     @Get()
     @ResponseSchema(UserListChunk)
-    async getList(@QueryParams() { pageSize, pageIndex }: UserFilter) {
+    async getList(
+        @QueryParams() { gender, keywords, pageSize, pageIndex }: UserFilter
+    ) {
+        const where = keywords
+            ? searchConditionOf<User>(keywords, [
+                  'email',
+                  'mobilePhone',
+                  'name'
+              ])
+            : gender
+              ? { gender }
+              : undefined;
+
         const [list, count] = await this.store.findAndCount({
+            where,
             skip: pageSize * (pageIndex - 1),
             take: pageSize
         });

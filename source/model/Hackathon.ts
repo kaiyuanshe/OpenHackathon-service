@@ -9,7 +9,7 @@ import {
     Min,
     ValidateNested
 } from 'class-validator';
-import { Column, Entity, VirtualColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, VirtualColumn } from 'typeorm';
 
 import { BaseFilter, InputData, ListChunk, Media } from './Base';
 import { UserBase } from './User';
@@ -113,11 +113,19 @@ export class Hackathon extends UserBase {
     @Column('date')
     judgeEndedAt: string;
 
-    roles: null | {
+    roles?: {
         isAdmin: boolean;
         isJudge: boolean;
         isEnrolled: boolean;
     };
+}
+
+export abstract class HackathonBase extends UserBase {
+    @Type(() => Hackathon)
+    @ValidateNested()
+    @IsOptional()
+    @ManyToOne(() => Hackathon)
+    hackathon: Hackathon;
 }
 
 export class HackathonFilter

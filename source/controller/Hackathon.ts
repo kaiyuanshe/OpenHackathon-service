@@ -4,6 +4,7 @@ import {
     CurrentUser,
     Delete,
     Get,
+    HttpCode,
     JsonController,
     NotFoundError,
     OnNull,
@@ -14,7 +15,6 @@ import {
     QueryParams
 } from 'routing-controllers';
 import { ResponseSchema } from 'routing-controllers-openapi';
-import { isEmpty } from 'web-utility';
 
 import {
     dataSource,
@@ -93,6 +93,7 @@ export class HackathonController {
 
     @Post()
     @Authorized()
+    @HttpCode(201)
     @ResponseSchema(Hackathon)
     createOne(@CurrentUser() createdBy: User, @Body() hackathon: Hackathon) {
         return this.store.save({ ...hackathon, createdBy });
@@ -104,27 +105,25 @@ export class HackathonController {
         @QueryParams()
         { keywords, pageSize, pageIndex, ...filter }: HackathonFilter
     ) {
-        const where = keywords
-            ? searchConditionOf<Hackathon>(keywords, [
-                  'name',
-                  'displayName',
-                  'ribbon',
-                  'summary',
-                  'detail',
-                  'location',
-                  'tags'
-              ])
-            : isEmpty(filter)
-              ? undefined
-              : filter;
-
+        const where = searchConditionOf<Hackathon>(
+            [
+                'name',
+                'displayName',
+                'ribbon',
+                'summary',
+                'detail',
+                'location',
+                'tags'
+            ],
+            keywords,
+            filter
+        );
         const [list, count] = await this.store.findAndCount({
             where,
             relations: ['createdBy'],
             skip: pageSize * (pageIndex - 1),
             take: pageSize
         });
-
         return { list, count };
     }
 }

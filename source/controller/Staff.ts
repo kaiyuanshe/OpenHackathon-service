@@ -4,6 +4,7 @@ import {
     CurrentUser,
     Delete,
     Get,
+    HttpCode,
     JsonController,
     NotFoundError,
     OnUndefined,
@@ -19,6 +20,7 @@ import {
     dataSource,
     Hackathon,
     Staff,
+    StaffListChunk,
     StaffType,
     User
 } from '../model';
@@ -31,6 +33,7 @@ export class StaffController {
     hackathonStore = dataSource.getRepository(Hackathon);
 
     @Put('/:uid')
+    @HttpCode(201)
     @Authorized()
     @ResponseSchema(Staff)
     async createOne(
@@ -92,22 +95,20 @@ export class StaffController {
 
         ensureAdmin(deletedBy, staff.hackathon.createdBy);
 
-        await this.store.delete(staff);
+        await this.store.delete(staff.id);
     }
 
     @Get()
+    @ResponseSchema(StaffListChunk)
     async getList(
         @Param('name') name: string,
         @Param('type') type: StaffType,
         @QueryParams() { keywords, pageSize, pageIndex }: BaseFilter
     ) {
-        const where = {
+        const where = searchConditionOf<Staff>(['description'], keywords, {
             hackathon: { name },
-            type,
-            ...(keywords
-                ? searchConditionOf<Staff>(keywords, ['description'])[0]
-                : {})
-        };
+            type
+        });
         const [list, count] = await this.store.findAndCount({
             where,
             relations: ['user'],

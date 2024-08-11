@@ -7,10 +7,9 @@ import {
     Min,
     ValidateNested
 } from 'class-validator';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
-import { Hackathon } from './Hackathon';
-import { UserBase } from './User';
+import { HackathonBase } from './Hackathon';
 import { BaseFilter, InputData, ListChunk } from './Base';
 
 export enum EnrollmentStatus {
@@ -29,13 +28,7 @@ export class Extension {
 }
 
 @Entity()
-export class Enrollment extends UserBase {
-    @Type(() => Hackathon)
-    @ValidateNested()
-    @IsOptional()
-    @ManyToOne(() => Hackathon)
-    hackathon: Hackathon;
-
+export class Enrollment extends HackathonBase {
     @IsEnum(EnrollmentStatus)
     @IsOptional()
     @Column({ type: 'simple-enum', enum: EnrollmentStatus })

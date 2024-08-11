@@ -1,9 +1,17 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+    IsEnum,
+    IsInt,
+    IsOptional,
+    IsString,
+    Min,
+    ValidateNested
+} from 'class-validator';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { Hackathon } from './Hackathon';
-import { User, UserBase } from './User';
+import { ListChunk } from './Base';
+import { HackathonBase } from './Hackathon';
+import { User } from './User';
 
 export enum StaffType {
     Admin = 'admin',
@@ -12,7 +20,7 @@ export enum StaffType {
 }
 
 @Entity()
-export class Staff extends UserBase {
+export class Staff extends HackathonBase {
     @IsEnum(StaffType)
     @IsOptional()
     @Column({ type: 'simple-enum', enum: StaffType })
@@ -24,14 +32,18 @@ export class Staff extends UserBase {
     @ManyToOne(() => User)
     user: User;
 
-    @Type(() => Hackathon)
-    @ValidateNested()
-    @IsOptional()
-    @ManyToOne(() => Hackathon)
-    hackathon: Hackathon;
-
     @IsString()
     @IsOptional()
     @Column({ nullable: true })
     description?: string;
+}
+
+export class StaffListChunk implements ListChunk<Staff> {
+    @IsInt()
+    @Min(0)
+    count: number;
+
+    @Type(() => Staff)
+    @ValidateNested({ each: true })
+    list: Staff[];
 }

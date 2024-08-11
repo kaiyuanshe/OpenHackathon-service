@@ -3,6 +3,7 @@ import {
     Body,
     CurrentUser,
     Get,
+    HttpCode,
     JsonController,
     NotFoundError,
     Param,
@@ -56,6 +57,7 @@ export class EnrollmentController {
 
     @Post()
     @Authorized()
+    @HttpCode(201)
     @ResponseSchema(Enrollment)
     async createOne(
         @CurrentUser() createdBy: User,
@@ -83,12 +85,13 @@ export class EnrollmentController {
         @QueryParams()
         { status, keywords, pageSize, pageIndex }: EnrollmentFilter
     ) {
+        const where = searchConditionOf<Enrollment>(
+            ['extensions'],
+            keywords,
+            status && { status }
+        );
         const [list, count] = await this.store.findAndCount({
-            where: keywords
-                ? searchConditionOf<Enrollment>(keywords, ['extensions'])
-                : status
-                  ? { status }
-                  : undefined,
+            where,
             relations: ['createdBy'],
             skip: pageSize * (pageIndex - 1),
             take: pageSize

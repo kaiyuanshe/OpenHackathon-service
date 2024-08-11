@@ -7,6 +7,7 @@ import {
     Delete,
     ForbiddenError,
     Get,
+    HttpCode,
     JsonController,
     OnNull,
     OnUndefined,
@@ -66,6 +67,7 @@ export class UserController {
     }
 
     @Post()
+    @HttpCode(201)
     @ResponseSchema(User)
     async signUp(@Body() data: SignInData) {
         const sum = await this.store.count();
@@ -119,16 +121,11 @@ export class UserController {
     async getList(
         @QueryParams() { gender, keywords, pageSize, pageIndex }: UserFilter
     ) {
-        const where = keywords
-            ? searchConditionOf<User>(keywords, [
-                  'email',
-                  'mobilePhone',
-                  'name'
-              ])
-            : gender
-              ? { gender }
-              : undefined;
-
+        const where = searchConditionOf<User>(
+            ['email', 'mobilePhone', 'name'],
+            keywords,
+            gender && { gender }
+        );
         const [list, count] = await this.store.findAndCount({
             where,
             skip: pageSize * (pageIndex - 1),

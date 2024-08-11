@@ -6,12 +6,14 @@ import { DATABASE_URL, isProduct } from '../utility';
 import { User } from './User';
 import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
+import { Organizer } from './Organizer';
 import { Enrollment } from './Enrollment';
 
 export * from './Base';
 export * from './User';
 export * from './Hackathon';
 export * from './Staff';
+export * from './Organizer';
 export * from './Enrollment';
 
 const { ssl, host, port, user, password, database } = isProduct
@@ -24,7 +26,7 @@ const commonOptions: Pick<
 > = {
     logging: true,
     synchronize: true,
-    entities: [User, Hackathon, Staff, Enrollment],
+    entities: [User, Hackathon, Staff, Organizer, Enrollment],
     migrations: [`${isProduct ? '.data' : 'migration'}/*.ts`]
 };
 

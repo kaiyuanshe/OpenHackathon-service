@@ -2,10 +2,13 @@ import {
     Authorized,
     Body,
     CurrentUser,
+    Delete,
     Get,
     JsonController,
     NotFoundError,
+    OnUndefined,
     Param,
+    Patch,
     Put,
     QueryParams
 } from 'routing-controllers';
@@ -49,6 +52,47 @@ export class StaffController {
         ensureAdmin(createdBy, hackathon.createdBy);
 
         return this.store.save({ ...staff, type, user, hackathon, createdBy });
+    }
+
+    @Patch('/:uid')
+    @Authorized()
+    @ResponseSchema(Staff)
+    async updateOne(
+        @CurrentUser() updatedBy: User,
+        @Param('name') name: string,
+        @Param('type') type: StaffType,
+        @Param('uid') uid: number,
+        @Body() { description }: Staff
+    ) {
+        const staff = await this.store.findOne({
+            where: { hackathon: { name }, type, user: { id: uid } },
+            relations: ['hackathon']
+        });
+        if (!staff) throw new NotFoundError();
+
+        ensureAdmin(updatedBy, staff.hackathon.createdBy);
+
+        return this.store.save({ ...staff, description, updatedBy });
+    }
+
+    @Delete('/:uid')
+    @Authorized()
+    @OnUndefined(204)
+    async deleteOne(
+        @CurrentUser() deletedBy: User,
+        @Param('name') name: string,
+        @Param('type') type: StaffType,
+        @Param('uid') uid: number
+    ) {
+        const staff = await this.store.findOne({
+            where: { hackathon: { name }, type, user: { id: uid } },
+            relations: ['hackathon']
+        });
+        if (!staff) throw new NotFoundError();
+
+        ensureAdmin(deletedBy, staff.hackathon.createdBy);
+
+        await this.store.delete(staff);
     }
 
     @Get()

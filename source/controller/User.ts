@@ -108,10 +108,10 @@ export class UserController {
         @Param('id') id: number,
         @CurrentUser() { id: ID, roles }: User
     ) {
-        if (!roles.includes(Role.Administrator) && id !== ID)
+        if (!roles.includes(Role.Administrator) || id !== ID)
             throw new ForbiddenError();
 
-        await this.store.delete(id);
+        await this.store.softDelete(id);
     }
 
     @Get()

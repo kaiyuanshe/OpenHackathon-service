@@ -134,4 +134,10 @@ export abstract class UserBase extends Base {
     @IsOptional()
     @ManyToOne(() => User)
     updatedBy?: User;
+
+    @Type(() => User)
+    @ValidateNested()
+    @IsOptional()
+    @ManyToOne(() => User)
+    deletedBy?: User;
 }

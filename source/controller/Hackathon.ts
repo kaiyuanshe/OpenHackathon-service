@@ -87,7 +87,8 @@ export class HackathonController {
 
         ensureAdmin(deletedBy, old.createdBy);
 
-        await this.store.delete(old.id);
+        await this.store.save({ ...old, deletedBy });
+        await this.store.softDelete(old.id);
     }
 
     @Post()

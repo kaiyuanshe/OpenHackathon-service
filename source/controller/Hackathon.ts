@@ -25,6 +25,7 @@ import {
     User
 } from '../model';
 import { ensureAdmin, searchConditionOf } from '../utility';
+import { ActivityLogController } from './ActivityLog';
 
 @JsonController('/hackathon')
 export class HackathonController {
@@ -37,7 +38,7 @@ export class HackathonController {
     async updateOne(
         @CurrentUser() updatedBy: User,
         @Param('name') name: string,
-        @Body() hackathon: Hackathon
+        @Body() newData: Hackathon
     ) {
         const old = await this.store.findOne({
             where: { name },
@@ -47,7 +48,11 @@ export class HackathonController {
 
         ensureAdmin(updatedBy, old.createdBy);
 
-        return this.store.save({ ...old, ...hackathon, updatedBy });
+        const saved = await this.store.save({ ...old, ...newData, updatedBy });
+
+        await ActivityLogController.logUpdate(updatedBy, 'Hackathon', old.id);
+
+        return saved;
     }
 
     @Get('/:name')
@@ -89,14 +94,23 @@ export class HackathonController {
 
         await this.store.save({ ...old, deletedBy });
         await this.store.softDelete(old.id);
+
+        await ActivityLogController.logDelete(deletedBy, 'Hackathon', old.id);
     }
 
     @Post()
     @Authorized()
     @HttpCode(201)
     @ResponseSchema(Hackathon)
-    createOne(@CurrentUser() createdBy: User, @Body() hackathon: Hackathon) {
-        return this.store.save({ ...hackathon, createdBy });
+    async createOne(
+        @CurrentUser() createdBy: User,
+        @Body() hackathon: Hackathon
+    ) {
+        const saved = await this.store.save({ ...hackathon, createdBy });
+
+        await ActivityLogController.logCreate(createdBy, 'Hackathon', saved.id);
+
+        return saved;
     }
 
     @Get()

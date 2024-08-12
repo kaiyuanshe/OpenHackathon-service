@@ -24,6 +24,7 @@ import {
     User
 } from '../model';
 import { ensureAdmin, searchConditionOf } from '../utility';
+import { ActivityLogController } from './ActivityLog';
 
 @JsonController('/hackathon/:name/organizer')
 export class OrganizerController {
@@ -47,7 +48,14 @@ export class OrganizerController {
 
         ensureAdmin(createdBy, hackathon.createdBy);
 
-        return this.store.save({ ...organizer, hackathon, createdBy });
+        const saved = await this.store.save({
+            ...organizer,
+            hackathon,
+            createdBy
+        });
+        await ActivityLogController.logCreate(createdBy, 'Organizer', saved.id);
+
+        return saved;
     }
 
     @Patch('/:id')
@@ -57,7 +65,7 @@ export class OrganizerController {
         @CurrentUser() updatedBy: User,
         @Param('name') name: string,
         @Param('id') id: number,
-        @Body() organizer: Organizer
+        @Body() newData: Organizer
     ) {
         const old = await this.store.findOne({
             where: { id },
@@ -67,7 +75,11 @@ export class OrganizerController {
 
         ensureAdmin(updatedBy, old.hackathon.createdBy);
 
-        return this.store.save({ ...old, ...organizer, updatedBy });
+        const saved = await this.store.save({ ...old, ...newData, updatedBy });
+
+        await ActivityLogController.logUpdate(updatedBy, 'Organizer', old.id);
+
+        return saved;
     }
 
     @Delete('/:id')
@@ -86,7 +98,14 @@ export class OrganizerController {
 
         ensureAdmin(deletedBy, organizer.hackathon.createdBy);
 
-        await this.store.delete(id);
+        await this.store.save({ ...organizer, deletedBy });
+        await this.store.softDelete(id);
+
+        await ActivityLogController.logDelete(
+            deletedBy,
+            'Organizer',
+            organizer.id
+        );
     }
 
     @Get()

@@ -28,6 +28,7 @@ import {
     UserListChunk
 } from '../model';
 import { APP_SECRET, searchConditionOf } from '../utility';
+import { ActivityLogController } from './ActivityLog';
 
 @JsonController('/user')
 export class UserController {
@@ -79,21 +80,30 @@ export class UserController {
                 roles: [sum ? Role.Client : Role.Administrator]
             })
         );
+        await ActivityLogController.logCreate(user, 'User', user.id);
+
         return user;
     }
 
     @Put('/:id')
     @Authorized()
     @ResponseSchema(User)
-    updateOne(
+    async updateOne(
         @Param('id') id: number,
-        @CurrentUser() { id: ID, roles }: User,
+        @CurrentUser() updatedBy: User,
         @Body() data: User
     ) {
-        if (!roles.includes(Role.Administrator) && id !== ID)
+        if (
+            !updatedBy.roles.includes(Role.Administrator) &&
+            id !== updatedBy.id
+        )
             throw new ForbiddenError();
 
-        return this.store.save({ ...data, id });
+        const saved = await this.store.save({ ...data, id });
+
+        await ActivityLogController.logUpdate(updatedBy, 'User', id);
+
+        return saved;
     }
 
     @Get('/:id')
@@ -106,14 +116,16 @@ export class UserController {
     @Delete('/:id')
     @Authorized()
     @OnUndefined(204)
-    async deleteOne(
-        @Param('id') id: number,
-        @CurrentUser() { id: ID, roles }: User
-    ) {
-        if (!roles.includes(Role.Administrator) || id !== ID)
+    async deleteOne(@Param('id') id: number, @CurrentUser() deletedBy: User) {
+        if (
+            !deletedBy.roles.includes(Role.Administrator) ||
+            id !== deletedBy.id
+        )
             throw new ForbiddenError();
 
         await this.store.softDelete(id);
+
+        await ActivityLogController.logDelete(deletedBy, 'User', id);
     }
 
     @Get()

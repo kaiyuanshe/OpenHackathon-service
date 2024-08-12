@@ -25,6 +25,7 @@ import {
     User
 } from '../model';
 import { ensureAdmin, searchConditionOf } from '../utility';
+import { ActivityLogController } from './ActivityLog';
 
 @JsonController('/hackathon/:name/:type')
 export class StaffController {
@@ -54,7 +55,16 @@ export class StaffController {
 
         ensureAdmin(createdBy, hackathon.createdBy);
 
-        return this.store.save({ ...staff, type, user, hackathon, createdBy });
+        const saved = await this.store.save({
+            ...staff,
+            type,
+            user,
+            hackathon,
+            createdBy
+        });
+        await ActivityLogController.logCreate(createdBy, 'Staff', saved.id);
+
+        return saved;
     }
 
     @Patch('/:uid')
@@ -75,7 +85,14 @@ export class StaffController {
 
         ensureAdmin(updatedBy, staff.hackathon.createdBy);
 
-        return this.store.save({ ...staff, description, updatedBy });
+        const saved = await this.store.save({
+            ...staff,
+            description,
+            updatedBy
+        });
+        await ActivityLogController.logUpdate(updatedBy, 'Staff', staff.id);
+
+        return saved;
     }
 
     @Delete('/:uid')
@@ -95,7 +112,10 @@ export class StaffController {
 
         ensureAdmin(deletedBy, staff.hackathon.createdBy);
 
-        await this.store.delete(staff.id);
+        await this.store.save({ ...staff, deletedBy });
+        await this.store.softDelete(staff.id);
+
+        await ActivityLogController.logDelete(deletedBy, 'Staff', staff.id);
     }
 
     @Get()

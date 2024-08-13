@@ -34,11 +34,15 @@ import { ActivityLogController } from './ActivityLog';
 export class UserController {
     store = dataSource.getRepository(User);
 
-    static encrypt(raw: string) {
-        return createHash('sha1')
+    static encrypt = (raw: string) =>
+        createHash('sha1')
             .update(APP_SECRET + raw)
             .digest('hex');
-    }
+
+    static sign = (user: User): User => ({
+        ...user,
+        token: sign({ ...user }, APP_SECRET)
+    });
 
     static getSession({ context: { state } }: JWTAction) {
         return state instanceof JsonWebTokenError
@@ -56,15 +60,13 @@ export class UserController {
     @Post('/session')
     @ResponseSchema(User)
     async signIn(@Body() { email, password }: SignInData): Promise<User> {
-        const user = await this.store.findOne({
-            where: {
-                email,
-                password: UserController.encrypt(password)
-            }
+        const user = await this.store.findOneBy({
+            email,
+            password: UserController.encrypt(password)
         });
         if (!user) throw new ForbiddenError();
 
-        return { ...user, token: sign({ ...user }, APP_SECRET) };
+        return UserController.sign(user);
     }
 
     @Post()

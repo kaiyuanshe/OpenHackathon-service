@@ -23,8 +23,9 @@ import {
     OrganizerListChunk,
     User
 } from '../model';
-import { ensureAdmin, searchConditionOf } from '../utility';
+import { searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
+import { HackathonController } from './Hackathon';
 
 @JsonController('/hackathon/:name/organizer')
 export class OrganizerController {
@@ -46,7 +47,7 @@ export class OrganizerController {
         });
         if (!hackathon) throw new NotFoundError();
 
-        ensureAdmin(createdBy, hackathon.createdBy);
+        await HackathonController.ensureAdmin(createdBy.id, name);
 
         const saved = await this.store.save({
             ...organizer,
@@ -73,7 +74,7 @@ export class OrganizerController {
         });
         if (!old) throw new NotFoundError();
 
-        ensureAdmin(updatedBy, old.hackathon.createdBy);
+        await HackathonController.ensureAdmin(updatedBy.id, name);
 
         const saved = await this.store.save({ ...old, ...newData, updatedBy });
 
@@ -96,7 +97,7 @@ export class OrganizerController {
         });
         if (!organizer) throw new NotFoundError();
 
-        ensureAdmin(deletedBy, organizer.hackathon.createdBy);
+        await HackathonController.ensureAdmin(deletedBy.id, name);
 
         await this.store.save({ ...organizer, deletedBy });
         await this.store.softDelete(id);

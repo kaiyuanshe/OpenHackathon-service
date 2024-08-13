@@ -24,14 +24,39 @@ import {
     StaffType,
     User
 } from '../model';
-import { ensureAdmin, searchConditionOf } from '../utility';
+import { searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
+import { HackathonController } from './Hackathon';
+
+const store = dataSource.getRepository(Staff),
+    userStore = dataSource.getRepository(User),
+    hackathonStore = dataSource.getRepository(Hackathon);
 
 @JsonController('/hackathon/:name/:type')
 export class StaffController {
-    store = dataSource.getRepository(Staff);
-    userStore = dataSource.getRepository(User);
-    hackathonStore = dataSource.getRepository(Hackathon);
+    static async isAdmin(userId: number, hackathonName: string) {
+        const hackathon = await hackathonStore.findOneBy({
+            name: hackathonName,
+            createdBy: { id: userId }
+        });
+        if (hackathon) return true;
+
+        const staff = await store.findOneBy({
+            hackathon: { name: hackathonName },
+            user: { id: userId },
+            type: StaffType.Admin
+        });
+        return !!staff;
+    }
+
+    static async isJudge(userId: number, hackathonName: string) {
+        const staff = await store.findOneBy({
+            hackathon: { name: hackathonName },
+            user: { id: userId },
+            type: StaffType.Judge
+        });
+        return !!staff;
+    }
 
     @Put('/:uid')
     @HttpCode(201)
@@ -45,17 +70,17 @@ export class StaffController {
         @Body() staff: Staff
     ) {
         const [user, hackathon] = await Promise.all([
-            this.userStore.findOneBy({ id: uid }),
-            this.hackathonStore.findOne({
+            userStore.findOneBy({ id: uid }),
+            hackathonStore.findOne({
                 where: { name },
                 relations: ['createdBy']
             })
         ]);
         if (!user || !hackathon || !StaffType[type]) throw new NotFoundError();
 
-        ensureAdmin(createdBy, hackathon.createdBy);
+        await HackathonController.ensureAdmin(createdBy.id, name);
 
-        const saved = await this.store.save({
+        const saved = await store.save({
             ...staff,
             type,
             user,
@@ -77,15 +102,15 @@ export class StaffController {
         @Param('uid') uid: number,
         @Body() { description }: Staff
     ) {
-        const staff = await this.store.findOne({
+        const staff = await store.findOne({
             where: { hackathon: { name }, type, user: { id: uid } },
             relations: ['hackathon']
         });
         if (!staff) throw new NotFoundError();
 
-        ensureAdmin(updatedBy, staff.hackathon.createdBy);
+        await HackathonController.ensureAdmin(updatedBy.id, name);
 
-        const saved = await this.store.save({
+        const saved = await store.save({
             ...staff,
             description,
             updatedBy
@@ -104,16 +129,16 @@ export class StaffController {
         @Param('type') type: StaffType,
         @Param('uid') uid: number
     ) {
-        const staff = await this.store.findOne({
+        const staff = await store.findOne({
             where: { hackathon: { name }, type, user: { id: uid } },
             relations: ['hackathon']
         });
         if (!staff) throw new NotFoundError();
 
-        ensureAdmin(deletedBy, staff.hackathon.createdBy);
+        await HackathonController.ensureAdmin(deletedBy.id, name);
 
-        await this.store.save({ ...staff, deletedBy });
-        await this.store.softDelete(staff.id);
+        await store.save({ ...staff, deletedBy });
+        await store.softDelete(staff.id);
 
         await ActivityLogController.logDelete(deletedBy, 'Staff', staff.id);
     }
@@ -129,7 +154,7 @@ export class StaffController {
             hackathon: { name },
             type
         });
-        const [list, count] = await this.store.findAndCount({
+        const [list, count] = await store.findAndCount({
             where,
             relations: ['user'],
             skip: pageSize * (pageIndex - 1),

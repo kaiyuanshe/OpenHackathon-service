@@ -22,19 +22,28 @@ import {
     Hackathon,
     User
 } from '../model';
-import { ensureAdmin, searchConditionOf } from '../utility';
+import { searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
+import { HackathonController } from './Hackathon';
+
+const store = dataSource.getRepository(Enrollment),
+    hackathonStore = dataSource.getRepository(Hackathon);
 
 @JsonController('/hackathon/:name/enrollment')
 export class EnrollmentController {
-    store = dataSource.getRepository(Enrollment);
-    hackathonStore = dataSource.getRepository(Hackathon);
+    static async isEnrolled(userId: number, hackathonName: string) {
+        const enrollment = await store.findOneBy({
+            hackathon: { name: hackathonName },
+            createdBy: { id: userId }
+        });
+        return !!enrollment;
+    }
 
     @Get('/session')
     @Authorized()
     @ResponseSchema(Enrollment)
     getSessionOne(@CurrentUser() createdBy: User) {
-        return this.store.findOne({ where: { createdBy } });
+        return store.findOneBy({ createdBy });
     }
 
     @Patch('/:id')
@@ -45,15 +54,15 @@ export class EnrollmentController {
         @Param('id') id: number,
         @Body() { status }: Enrollment
     ) {
-        const old = await this.store.findOne({
+        const old = await store.findOne({
             where: { id },
             relations: ['hackathon']
         });
         if (!old) throw new NotFoundError();
 
-        ensureAdmin(updatedBy, old.hackathon.createdBy);
+        await HackathonController.ensureAdmin(updatedBy.id, old.hackathon.name);
 
-        const saved = await this.store.save({ ...old, status, updatedBy });
+        const saved = await store.save({ ...old, status, updatedBy });
 
         await ActivityLogController.logUpdate(updatedBy, 'Enrollment', old.id);
 
@@ -69,12 +78,11 @@ export class EnrollmentController {
         @Param('name') name: string,
         @Body() { extensions }: Enrollment
     ) {
-        const hackathon = await this.hackathonStore.findOne({
-            where: { name }
-        });
+        const hackathon = await hackathonStore.findOneBy({ name });
+
         if (!hackathon) throw new NotFoundError();
 
-        const saved = await this.store.save({
+        const saved = await store.save({
             createdBy,
             hackathon,
             extensions,
@@ -101,7 +109,7 @@ export class EnrollmentController {
             keywords,
             status && { status }
         );
-        const [list, count] = await this.store.findAndCount({
+        const [list, count] = await store.findAndCount({
             where,
             relations: ['createdBy'],
             skip: pageSize * (pageIndex - 1),

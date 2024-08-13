@@ -40,25 +40,7 @@
 -   Entry: http://localhost:8080/
 -   Document: http://localhost:8080/docs/
 -   Schema: http://localhost:8080/docs/spec/
-
-### Type package
-
-#### Sign in GitHub packages with NPM
-
-1. Generate a [PAT][22] with `read:packages` authorization
-2. Run Sign-in command in your terminal, and use PAT as password:
-
-```shell
-npm login --scope=@your-org --registry=https://npm.pkg.github.com
-```
-
-#### Installation
-
-```shell
-npm i pnpm -g
-
-pnpm i @kaiyuanshe/openhackathon-service -D
-```
+-   Type: https://github.com/kaiyuanshe/OpenHackathon-service/pkgs/npm/openhackathon-service
 
 ## Environment variables
 
@@ -150,4 +132,3 @@ git push origin master --tags
 [19]: https://github.com/kaiyuanshe/kaiyuanshe.github.io/blob/bb4675a56bf1d6b207231313da5ed0af7cf0ebd6/.github/workflows/pull-request.yml#L32-L56
 [20]: https://github.com/kaiyuanshe/OpenHackathon-service/issues/new/choose
 [21]: https://github.com/kaiyuanshe/OpenHackathon-service/projects
-[22]: https://github.com/settings/tokens

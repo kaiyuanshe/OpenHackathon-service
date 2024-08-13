@@ -23,6 +23,7 @@ import {
     User
 } from '../model';
 import { ensureAdmin, searchConditionOf } from '../utility';
+import { ActivityLogController } from './ActivityLog';
 
 @JsonController('/hackathon/:name/enrollment')
 export class EnrollmentController {
@@ -44,15 +45,19 @@ export class EnrollmentController {
         @Param('id') id: number,
         @Body() { status }: Enrollment
     ) {
-        const enrollment = await this.store.findOne({
+        const old = await this.store.findOne({
             where: { id },
             relations: ['hackathon']
         });
-        if (!enrollment) throw new NotFoundError();
+        if (!old) throw new NotFoundError();
 
-        ensureAdmin(updatedBy, enrollment.hackathon.createdBy);
+        ensureAdmin(updatedBy, old.hackathon.createdBy);
 
-        return this.store.save({ ...enrollment, status, updatedBy });
+        const saved = await this.store.save({ ...old, status, updatedBy });
+
+        await ActivityLogController.logUpdate(updatedBy, 'Enrollment', old.id);
+
+        return saved;
     }
 
     @Post()
@@ -69,7 +74,7 @@ export class EnrollmentController {
         });
         if (!hackathon) throw new NotFoundError();
 
-        return this.store.save({
+        const saved = await this.store.save({
             createdBy,
             hackathon,
             extensions,
@@ -77,6 +82,12 @@ export class EnrollmentController {
                 ? EnrollmentStatus.Approved
                 : EnrollmentStatus.PendingApproval
         });
+        await ActivityLogController.logCreate(
+            createdBy,
+            'Enrollment',
+            saved.id
+        );
+        return saved;
     }
 
     @Get()

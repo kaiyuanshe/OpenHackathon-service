@@ -24,7 +24,7 @@ export enum OrganizerType {
 @Entity()
 export class Organizer extends HackathonBase {
     @IsEnum(OrganizerType)
-    @Column({ type: 'enum', enum: OrganizerType })
+    @Column({ type: 'simple-enum', enum: OrganizerType })
     type: OrganizerType;
 
     @IsString()

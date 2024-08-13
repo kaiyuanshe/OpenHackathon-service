@@ -7,15 +7,15 @@ import {
     Min,
     ValidateNested
 } from 'class-validator';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ViewColumn, ViewEntity } from 'typeorm';
 
 import { Base, BaseFilter, InputData, ListChunk } from './Base';
-import { User, UserBase } from './User';
-import { PlatformAdmin } from './PlatformAdmin';
-import { Hackathon } from './Hackathon';
-import { Staff } from './Staff';
-import { Organizer } from './Organizer';
 import { Enrollment } from './Enrollment';
+import { Hackathon } from './Hackathon';
+import { Organizer } from './Organizer';
+import { PlatformAdmin } from './PlatformAdmin';
+import { Staff } from './Staff';
+import { User, UserBase } from './User';
 
 export enum Operation {
     Create = 'create',
@@ -81,4 +81,41 @@ export class ActivityLogListChunk implements ListChunk<ActivityLog> {
     @Type(() => ActivityLog)
     @ValidateNested({ each: true })
     list: ActivityLog[];
+}
+
+@ViewEntity({
+    expression: connection =>
+        connection
+            .createQueryBuilder()
+            .from(ActivityLog, 'al')
+            .groupBy('al.createdBy')
+            .select('al.createdBy.id', 'userId')
+            .addSelect('COUNT(al.id)', 'score')
+})
+export class UserRank {
+    @IsInt()
+    @Min(1)
+    @ViewColumn()
+    userId: number;
+
+    @Type(() => User)
+    @ValidateNested()
+    user: User;
+
+    @ViewColumn()
+    score: number;
+
+    @IsInt()
+    @Min(1)
+    rank: number;
+}
+
+export class UserRankListChunk implements ListChunk<UserRank> {
+    @IsInt()
+    @Min(0)
+    count: number;
+
+    @Type(() => UserRank)
+    @ValidateNested({ each: true })
+    list: UserRank[];
 }

@@ -30,10 +30,10 @@ import {
 import { APP_SECRET, searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
 
+const store = dataSource.getRepository(User);
+
 @JsonController('/user')
 export class UserController {
-    store = dataSource.getRepository(User);
-
     static encrypt = (raw: string) =>
         createHash('sha1')
             .update(APP_SECRET + raw)
@@ -43,6 +43,20 @@ export class UserController {
         ...user,
         token: sign({ ...user }, APP_SECRET)
     });
+
+    static async signUp(data: SignInData) {
+        const sum = await store.count();
+
+        const { password, ...user } = await store.save(
+            Object.assign(new User(), data, {
+                password: UserController.encrypt(data.password),
+                roles: [sum ? Role.Client : Role.Administrator]
+            })
+        );
+        await ActivityLogController.logCreate(user, 'User', user.id);
+
+        return user;
+    }
 
     static getSession({ context: { state } }: JWTAction) {
         return state instanceof JsonWebTokenError
@@ -60,7 +74,7 @@ export class UserController {
     @Post('/session')
     @ResponseSchema(User)
     async signIn(@Body() { email, password }: SignInData): Promise<User> {
-        const user = await this.store.findOneBy({
+        const user = await store.findOneBy({
             email,
             password: UserController.encrypt(password)
         });
@@ -72,19 +86,8 @@ export class UserController {
     @Post()
     @HttpCode(201)
     @ResponseSchema(User)
-    async signUp(@Body() data: SignInData) {
-        const sum = await this.store.count();
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password, ...user } = await this.store.save(
-            Object.assign(new User(), data, {
-                password: UserController.encrypt(data.password),
-                roles: [sum ? Role.Client : Role.Administrator]
-            })
-        );
-        await ActivityLogController.logCreate(user, 'User', user.id);
-
-        return user;
+    signUp(@Body() data: SignInData) {
+        return UserController.signUp(data);
     }
 
     @Put('/:id')
@@ -101,7 +104,7 @@ export class UserController {
         )
             throw new ForbiddenError();
 
-        const saved = await this.store.save({ ...data, id });
+        const saved = await store.save({ ...data, id });
 
         await ActivityLogController.logUpdate(updatedBy, 'User', id);
 
@@ -112,7 +115,7 @@ export class UserController {
     @OnNull(404)
     @ResponseSchema(User)
     getOne(@Param('id') id: number) {
-        return this.store.findOne({ where: { id } });
+        return store.findOne({ where: { id } });
     }
 
     @Delete('/:id')
@@ -125,7 +128,7 @@ export class UserController {
         )
             throw new ForbiddenError();
 
-        await this.store.softDelete(id);
+        await store.softDelete(id);
 
         await ActivityLogController.logDelete(deletedBy, 'User', id);
     }
@@ -140,7 +143,7 @@ export class UserController {
             keywords,
             gender && { gender }
         );
-        const [list, count] = await this.store.findAndCount({
+        const [list, count] = await store.findAndCount({
             where,
             skip: pageSize * (pageIndex - 1),
             take: pageSize

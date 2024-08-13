@@ -1,6 +1,6 @@
 {
     "name": "@kaiyuanshe/openhackathon-service",
-    "version": "0.13.0",
+    "version": "0.14.0",
     "license": "LGPL-3.0",
     "author": "shiy2008@gmail.com",
     "description": "RESTful API service scaffold based on Node.js & TypeScript",
@@ -44,6 +44,7 @@
         "web-utility": "^4.4.0"
     },
     "devDependencies": {
+        "@octokit/openapi-types": "^22.2.0",
         "@types/jsonwebtoken": "^9.0.6",
         "@types/koa": "^2.15.0",
         "@types/koa-logger": "^3.1.5",

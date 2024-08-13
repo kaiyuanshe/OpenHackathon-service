@@ -3,7 +3,7 @@ version: '3'
 volumes:
     database-data:
 networks:
-    idea2app:
+    kaiyuanshe:
 
 services:
     postgres:
@@ -13,7 +13,7 @@ services:
         volumes:
             - database-data:/var/lib/postgresql/data/
         networks:
-            - idea2app
+            - kaiyuanshe
         restart: always
     openhackathon-service:
         depends_on:
@@ -24,7 +24,7 @@ services:
             - DATABASE_URL=postgres://postgres:${APP_SECRET}@postgres:5432/postgres
             - PORT=8080
         networks:
-            - idea2app
+            - kaiyuanshe
         healthcheck:
             test: ['CMD-SHELL', 'curl -f http://localhost:8080/ || exit 1']
             interval: 3s
@@ -46,6 +46,6 @@ services:
             - 80:80
             - 443:443
         networks:
-            - idea2app
+            - kaiyuanshe
         restart: always
         command: caddy reverse-proxy --from example.com --to openhackathon-service:8080

@@ -1,12 +1,17 @@
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { Base, Media } from './Base';
 import { Team } from './Team';
 import { User } from './User';
 
-export interface Award
-    extends Record<'hackathonName' | 'name' | 'description', string>,
-        Base {
+@Entity()
+export class Award extends Base {
+    @Column()
     quantity: number;
+
+    @Column()
     target: 'team' | 'individual';
+
+    @Column()
     pictures: Media[];
 }
 

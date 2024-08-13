@@ -13,6 +13,7 @@ import { Enrollment } from './Enrollment';
 
 export * from './Base';
 export * from './User';
+export * from './OAuth';
 export * from './PlatformAdmin';
 export * from './ActivityLog';
 export * from './Hackathon';

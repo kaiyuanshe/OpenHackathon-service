@@ -4,6 +4,7 @@ import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionO
 
 import { DATABASE_URL, isProduct } from '../utility';
 import { User } from './User';
+import { PlatformAdmin } from './PlatformAdmin';
 import { ActivityLog } from './ActivityLog';
 import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
@@ -12,6 +13,7 @@ import { Enrollment } from './Enrollment';
 
 export * from './Base';
 export * from './User';
+export * from './PlatformAdmin';
 export * from './ActivityLog';
 export * from './Hackathon';
 export * from './Staff';
@@ -28,7 +30,15 @@ const commonOptions: Pick<
 > = {
     logging: true,
     synchronize: true,
-    entities: [User, ActivityLog, Hackathon, Staff, Organizer, Enrollment],
+    entities: [
+        User,
+        PlatformAdmin,
+        ActivityLog,
+        Hackathon,
+        Staff,
+        Organizer,
+        Enrollment
+    ],
     migrations: [`${isProduct ? '.data' : 'migration'}/*.ts`]
 };
 

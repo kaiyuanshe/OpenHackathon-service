@@ -11,6 +11,7 @@ import { Column, Entity } from 'typeorm';
 
 import { Base, BaseFilter, InputData, ListChunk } from './Base';
 import { User, UserBase } from './User';
+import { PlatformAdmin } from './PlatformAdmin';
 import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
 import { Organizer } from './Organizer';
@@ -22,8 +23,14 @@ export enum Operation {
     Delete = 'delete'
 }
 
-const LogableTable = { User, Hackathon, Staff, Organizer, Enrollment };
-
+const LogableTable = {
+    User,
+    PlatformAdmin,
+    Hackathon,
+    Staff,
+    Organizer,
+    Enrollment
+};
 const LogableTableEnum = Object.fromEntries(
     Object.entries(LogableTable).map(([key]) => [key, key])
 );

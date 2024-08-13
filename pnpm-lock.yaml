@@ -17,6 +17,9 @@ importers:
       '@koa/router':
         specifier: ^12.0.1
         version: 12.0.1
+      '@octokit/openapi-types':
+        specifier: ^22.2.0
+        version: 22.2.0
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -53,6 +56,9 @@ importers:
       koagger:
         specifier: ^0.3.0
         version: 0.3.0(@types/koa@2.15.0)
+      marked:
+        specifier: ^14.0.0
+        version: 14.0.0
       mobx-restful:
         specifier: ^1.0.0
         version: 1.0.0(typescript@5.5.4)
@@ -81,9 +87,6 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0(typescript@5.5.4)
     devDependencies:
-      '@octokit/openapi-types':
-        specifier: ^22.2.0
-        version: 22.2.0
       '@types/jsonwebtoken':
         specifier: ^9.0.6
         version: 9.0.6
@@ -1627,6 +1630,11 @@ packages:
   make-fetch-happen@9.1.0:
     resolution: {integrity: sha512-+zopwDy7DNknmwPQplem5lAZX/eCOzSvSNNcSKm5eVwTkOBzoktEfXsa9L23J/GIRhxRsaxzkPEhrJEpE2F4Gg==}
     engines: {node: '>= 10'}
+
+  marked@14.0.0:
+    resolution: {integrity: sha512-uIj4+faQ+MgHgwUW1l2PsPglZLOLOT1uErt06dAPtx2kjteLAkbsd/0FiYg/MGS+i7ZKLb7w2WClxHkzOOuryQ==}
+    engines: {node: '>= 18'}
+    hasBin: true
 
   media-typer@0.3.0:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
@@ -4384,6 +4392,8 @@ snapshots:
       - bluebird
       - supports-color
     optional: true
+
+  marked@14.0.0: {}
 
   media-typer@0.3.0: {}
 

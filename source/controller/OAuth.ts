@@ -9,7 +9,7 @@ import { UserController } from './User';
 const store = dataSource.getRepository(User);
 
 @JsonController('/user/OAuth')
-export class OAuthController {
+export class OauthController {
     @Post('/GitHub')
     @ResponseSchema(User)
     async signInWithGithub(@Body() { accessToken }: OAuthSignInData) {

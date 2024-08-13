@@ -3,7 +3,7 @@ import { createAPI } from 'koagger';
 
 import { isProduct } from '../utility';
 import { UserController } from './User';
-import { OAuthController } from './OAuth';
+import { OauthController } from './OAuth';
 import { ActivityLogController } from './ActivityLog';
 import { HackathonController } from './Hackathon';
 import { StaffController } from './Staff';
@@ -19,7 +19,7 @@ export * from './Enrollment';
 export const { swagger, mocker, router } = createAPI({
     mock: !isProduct,
     controllers: [
-        OAuthController,
+        OauthController,
         UserController,
         ActivityLogController,
         EnrollmentController,

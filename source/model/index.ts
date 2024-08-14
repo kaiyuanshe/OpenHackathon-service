@@ -33,7 +33,16 @@ const commonOptions: Pick<
 > = {
     logging: true,
     synchronize: true,
-    entities: [User, Hackathon, Staff, Enrollment, Award],
+    entities: [
+        User,
+        PlatformAdmin,
+        ActivityLog,
+        Hackathon,
+        Staff,
+        Organizer,
+        Enrollment,
+        Award
+    ],
     migrations: [`${isProduct ? '.data' : 'migration'}/*.ts`]
 };
 

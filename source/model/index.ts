@@ -4,15 +4,22 @@ import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionO
 
 import { DATABASE_URL, isProduct } from '../utility';
 import { User } from './User';
+import { PlatformAdmin } from './PlatformAdmin';
+import { ActivityLog } from './ActivityLog';
 import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
+import { Organizer } from './Organizer';
 import { Enrollment } from './Enrollment';
 import { Award } from './Award';
 
 export * from './Base';
 export * from './User';
+export * from './OAuth';
+export * from './PlatformAdmin';
+export * from './ActivityLog';
 export * from './Hackathon';
 export * from './Staff';
+export * from './Organizer';
 export * from './Enrollment';
 export * from './Award';
 

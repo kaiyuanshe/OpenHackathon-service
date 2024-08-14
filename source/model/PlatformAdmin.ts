@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-    IsEnum,
     IsInt,
     IsOptional,
     IsString,
@@ -10,22 +9,10 @@ import {
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { ListChunk } from './Base';
-import { HackathonBase } from './Hackathon';
-import { User } from './User';
-
-export enum StaffType {
-    Admin = 'admin',
-    Judge = 'judge',
-    Member = 'member'
-}
+import { User, UserBase } from './User';
 
 @Entity()
-export class Staff extends HackathonBase {
-    @IsEnum(StaffType)
-    @IsOptional()
-    @Column({ type: 'simple-enum', enum: StaffType })
-    type: StaffType;
-
+export class PlatformAdmin extends UserBase {
     @Type(() => User)
     @ValidateNested()
     @IsOptional()
@@ -38,12 +25,12 @@ export class Staff extends HackathonBase {
     description?: string;
 }
 
-export class StaffListChunk implements ListChunk<Staff> {
+export class PlatformAdminListChunk implements ListChunk<PlatformAdmin> {
     @IsInt()
     @Min(0)
     count: number;
 
-    @Type(() => Staff)
+    @Type(() => PlatformAdmin)
     @ValidateNested({ each: true })
-    list: Staff[];
+    list: PlatformAdmin[];
 }

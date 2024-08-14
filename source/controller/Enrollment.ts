@@ -3,6 +3,7 @@ import {
     Body,
     CurrentUser,
     Get,
+    HttpCode,
     JsonController,
     NotFoundError,
     Param,
@@ -21,18 +22,28 @@ import {
     Hackathon,
     User
 } from '../model';
-import { ensureAdmin, searchConditionOf } from '../utility';
+import { searchConditionOf } from '../utility';
+import { ActivityLogController } from './ActivityLog';
+import { HackathonController } from './Hackathon';
+
+const store = dataSource.getRepository(Enrollment),
+    hackathonStore = dataSource.getRepository(Hackathon);
 
 @JsonController('/hackathon/:name/enrollment')
 export class EnrollmentController {
-    store = dataSource.getRepository(Enrollment);
-    hackathonStore = dataSource.getRepository(Hackathon);
+    static async isEnrolled(userId: number, hackathonName: string) {
+        const enrollment = await store.findOneBy({
+            hackathon: { name: hackathonName },
+            createdBy: { id: userId }
+        });
+        return !!enrollment;
+    }
 
     @Get('/session')
     @Authorized()
     @ResponseSchema(Enrollment)
     getSessionOne(@CurrentUser() createdBy: User) {
-        return this.store.findOne({ where: { createdBy } });
+        return store.findOneBy({ createdBy });
     }
 
     @Patch('/:id')
@@ -43,31 +54,35 @@ export class EnrollmentController {
         @Param('id') id: number,
         @Body() { status }: Enrollment
     ) {
-        const enrollment = await this.store.findOne({
+        const old = await store.findOne({
             where: { id },
             relations: ['hackathon']
         });
-        if (!enrollment) throw new NotFoundError();
+        if (!old) throw new NotFoundError();
 
-        ensureAdmin(updatedBy, enrollment.hackathon.createdBy);
+        await HackathonController.ensureAdmin(updatedBy.id, old.hackathon.name);
 
-        return this.store.save({ ...enrollment, status, updatedBy });
+        const saved = await store.save({ ...old, status, updatedBy });
+
+        await ActivityLogController.logUpdate(updatedBy, 'Enrollment', old.id);
+
+        return saved;
     }
 
     @Post()
     @Authorized()
+    @HttpCode(201)
     @ResponseSchema(Enrollment)
     async createOne(
         @CurrentUser() createdBy: User,
         @Param('name') name: string,
         @Body() { extensions }: Enrollment
     ) {
-        const hackathon = await this.hackathonStore.findOne({
-            where: { name }
-        });
+        const hackathon = await hackathonStore.findOneBy({ name });
+
         if (!hackathon) throw new NotFoundError();
 
-        return this.store.save({
+        const saved = await store.save({
             createdBy,
             hackathon,
             extensions,
@@ -75,6 +90,12 @@ export class EnrollmentController {
                 ? EnrollmentStatus.Approved
                 : EnrollmentStatus.PendingApproval
         });
+        await ActivityLogController.logCreate(
+            createdBy,
+            'Enrollment',
+            saved.id
+        );
+        return saved;
     }
 
     @Get()
@@ -83,12 +104,13 @@ export class EnrollmentController {
         @QueryParams()
         { status, keywords, pageSize, pageIndex }: EnrollmentFilter
     ) {
-        const [list, count] = await this.store.findAndCount({
-            where: keywords
-                ? searchConditionOf<Enrollment>(keywords, ['extensions'])
-                : status
-                  ? { status }
-                  : undefined,
+        const where = searchConditionOf<Enrollment>(
+            ['extensions'],
+            keywords,
+            status && { status }
+        );
+        const [list, count] = await store.findAndCount({
+            where,
             relations: ['createdBy'],
             skip: pageSize * (pageIndex - 1),
             take: pageSize

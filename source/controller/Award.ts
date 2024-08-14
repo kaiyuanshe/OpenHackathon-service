@@ -8,6 +8,7 @@ import {
     ForbiddenError,
     Get,
     JsonController,
+    NotFoundError,
     OnNull,
     OnUndefined,
     Param,
@@ -30,19 +31,18 @@ import {
 } from '../model';
 import { APP_SECRET, searchConditionOf } from '../utility';
 
-
 @JsonController('/hackathon/:hackathon/award/:award')
-export class AwardController{
+export class AwardController {
     store = dataSource.getRepository(Award);
     hackathonStore = dataSource.getRepository(Hackathon);
-    
+
     @Put('/:uid')
     @Authorized()
     @ResponseSchema(Award)
-    async createOne(
-        @Param('hackathon') hackathon:string, 
-        @Body() body:
-    )
-
-
+    async createOne(@Param('hackathon') hackathon: string) {
+        const old = await this.hackathonStore.findOne({
+            where: {}
+        });
+        if (!old) throw new NotFoundError();
+    }
 }

@@ -86,7 +86,7 @@ export class Hackathon extends UserBase {
     @Min(0)
     @VirtualColumn({
         query: alias =>
-            `SELECT COUNT(*) FROM "Enrollment" WHERE hackathonId = ${alias}.id`
+            `SELECT COUNT(*) FROM "enrollment" WHERE "enrollment"."hackathonId" = ${alias}.id`
     })
     enrollment: number;
 

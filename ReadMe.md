@@ -46,7 +46,7 @@
 
 |      Name      |            Usage             |
 | :------------: | :--------------------------: |
-|  `APP_SECRET`  |   encrypt Password & Token   |
+|  `JWT_SECRET`  |   encrypt Password & Token   |
 | `DATABASE_URL` | PostgreSQL connection string |
 
 ## Development

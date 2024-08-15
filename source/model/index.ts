@@ -5,7 +5,7 @@ import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionO
 import { DATABASE_URL, isProduct } from '../utility';
 import { User } from './User';
 import { PlatformAdmin } from './PlatformAdmin';
-import { ActivityLog } from './ActivityLog';
+import { ActivityLog, UserRank } from './ActivityLog';
 import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
 import { Organizer } from './Organizer';
@@ -35,6 +35,7 @@ const commonOptions: Pick<
         User,
         PlatformAdmin,
         ActivityLog,
+        UserRank,
         Hackathon,
         Staff,
         Organizer,

@@ -16,12 +16,12 @@ export class OauthController {
         const response = await fetch('https://api.github.com/user', {
             headers: { Authorization: `Bearer ${accessToken}` }
         });
-        const { email, name, avatar_url } =
+        const { email, login, avatar_url } =
             (await response.json()) as GitHubUser;
         const user =
             (await store.findOneBy({ email })) ||
             (await UserController.signUp({ email, password: accessToken }));
-        const newProfile = { name, avatar_url },
+        const newProfile = { name: login, avatar: avatar_url },
             oldPofile = { name: user.name, avatar: user.avatar };
 
         if (!isDeepStrictEqual(oldPofile, newProfile)) {

@@ -6,6 +6,15 @@ import { User } from './User';
 @Entity()
 export class Award extends Base {
     @Column()
+    hackathonName: string;
+
+    @Column()
+    name: string;
+
+    @Column()
+    description: string;
+
+    @Column()
     quantity: number;
 
     @Column()

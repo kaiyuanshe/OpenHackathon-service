@@ -39,10 +39,10 @@ export class AwardController {
     @Put('/:uid')
     @Authorized()
     @ResponseSchema(Award)
-    async createOne(@Param('hackathon') hackathon: string) {
-        const old = await this.hackathonStore.findOne({
-            where: {}
-        });
-        if (!old) throw new NotFoundError();
+    async createOne(@Param('name') name: string) {
+        const hackathon = await this.hackathonStore.findOneBy({ name });
+        if (!hackathon) throw new NotFoundError();
+
+        const saved = await this.store.save({});
     }
 }

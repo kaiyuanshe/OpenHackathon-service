@@ -30,8 +30,20 @@ services:
             interval: 3s
             retries: 5
             start_period: 30s
-        labels:
-            - autoheal=true
+        # labels:
+        #     - autoheal=true
+        restart: always
+    dashpress:
+        depends_on:
+            - postgres
+        image: kaiyuanshe/dashpress
+        volumes:
+            - ./dashpress/app:/app
+            - ./dashpress/.config-data:/.config-data
+        ports:
+            - 8081:3000
+        networks:
+            - kaiyuanshe
         restart: always
     autoheal:
         image: willfarrell/autoheal:1.2.0

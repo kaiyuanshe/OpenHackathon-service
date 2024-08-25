@@ -10,6 +10,7 @@ import { HackathonController } from './Hackathon';
 import { StaffController } from './Staff';
 import { OrganizerController } from './Organizer';
 import { EnrollmentController } from './Enrollment';
+import { TeamController } from './Team';
 
 export * from './Base';
 export * from './User';
@@ -19,6 +20,7 @@ export * from './Hackathon';
 export * from './Staff';
 export * from './Organizer';
 export * from './Enrollment';
+export * from './Team';
 
 export const { swagger, mocker, router } = createAPI({
     mock: !isProduct,
@@ -29,6 +31,7 @@ export const { swagger, mocker, router } = createAPI({
         StaffController,
         OrganizerController,
         EnrollmentController,
+        TeamController,
         HackathonController,
         BaseController
     ]

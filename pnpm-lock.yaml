@@ -17,9 +17,6 @@ importers:
       '@koa/router':
         specifier: ^13.0.0
         version: 13.0.0
-      '@octokit/openapi-types':
-        specifier: ^22.2.0
-        version: 22.2.0
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -87,6 +84,9 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0(typescript@5.5.4)
     devDependencies:
+      '@octokit/openapi-types':
+        specifier: ^22.2.0
+        version: 22.2.0
       '@types/jsonwebtoken':
         specifier: ^9.0.6
         version: 9.0.6

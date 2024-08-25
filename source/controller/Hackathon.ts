@@ -42,6 +42,11 @@ export class HackathonController {
             throw new ForbiddenError();
     }
 
+    static async ensureEnrolled(userId: number, hackathonName: string) {
+        if (!(await EnrollmentController.isEnrolled(userId, hackathonName)))
+            throw new ForbiddenError();
+    }
+
     @Patch('/:name')
     @Authorized()
     @ResponseSchema(Hackathon)

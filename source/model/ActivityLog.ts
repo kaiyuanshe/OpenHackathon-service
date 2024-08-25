@@ -23,7 +23,7 @@ export enum Operation {
     Delete = 'delete'
 }
 
-const LogableTable = {
+export const LogableTable = {
     User,
     PlatformAdmin,
     Hackathon,
@@ -62,15 +62,6 @@ export class ActivityLogFilter
     @IsEnum(Operation)
     @IsOptional()
     operation?: Operation;
-
-    @IsEnum(LogableTableEnum)
-    @IsOptional()
-    tableName?: keyof typeof LogableTable;
-
-    @IsInt()
-    @Min(1)
-    @IsOptional()
-    recordId?: number;
 }
 
 export class ActivityLogListChunk implements ListChunk<ActivityLog> {

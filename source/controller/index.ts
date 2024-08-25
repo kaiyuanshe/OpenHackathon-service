@@ -8,6 +8,7 @@ import { OauthController } from './OAuth';
 import { ActivityLogController } from './ActivityLog';
 import { HackathonController } from './Hackathon';
 import { StaffController } from './Staff';
+import { OrganizerController } from './Organizer';
 import { EnrollmentController } from './Enrollment';
 
 export * from './Base';
@@ -16,6 +17,7 @@ export * from './OAuth';
 export * from './ActivityLog';
 export * from './Hackathon';
 export * from './Staff';
+export * from './Organizer';
 export * from './Enrollment';
 
 export const { swagger, mocker, router } = createAPI({
@@ -24,9 +26,10 @@ export const { swagger, mocker, router } = createAPI({
         OauthController,
         UserController,
         ActivityLogController,
+        StaffController,
+        OrganizerController,
         EnrollmentController,
         HackathonController,
-        StaffController,
         BaseController
     ]
 });

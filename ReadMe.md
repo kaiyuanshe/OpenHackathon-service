@@ -142,7 +142,7 @@ git push origin master --tags
 [12]: https://typeorm.io/
 [13]: https://swagger.io/
 [14]: https://github.com/anttiviljami/openapi-backend
-[15]: https://github.com/idea2app/Next-SSR-middleware
+[15]: https://github.com/kaiyuanshe/Next-SSR-middleware
 [16]: https://github.com/apps/settings
 [17]: https://pullrequestbadge.com/
 [18]: https://code.visualstudio.com/

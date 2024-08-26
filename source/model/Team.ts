@@ -2,11 +2,12 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsInt,
+    IsOptional,
     IsString,
     Min,
     ValidateNested
 } from 'class-validator';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne, VirtualColumn } from 'typeorm';
 
 import { ListChunk } from './Base';
 import { HackathonBase } from './Hackathon';
@@ -25,7 +26,21 @@ export class Team extends HackathonBase {
     @Column()
     autoApprove: boolean;
 
+    @IsInt()
+    @Min(1)
+    @VirtualColumn({
+        query: alias =>
+            `SELECT COUNT(*) FROM "teammember" WHERE "teammember"."teamId" = ${alias}.id`
+    })
     membersCount: number;
+}
+
+export abstract class TeamBase extends HackathonBase {
+    @Type(() => Team)
+    @ValidateNested()
+    @IsOptional()
+    @ManyToOne(() => Team)
+    team: Team;
 }
 
 export class TeamListChunk implements ListChunk<Team> {

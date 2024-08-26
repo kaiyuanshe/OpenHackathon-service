@@ -34,6 +34,7 @@
     4. [Enrollment](source/controller/Enrollment.ts)
 5. Team management
     1. [Meta](source/controller/Team.ts)
+    2. [Member](source/controller/Member.ts)
 
 ## Best practice
 
@@ -116,7 +117,7 @@ pnpm container
 
 ```shell
 git checkout master
-git tag v0.7.0  # this version tag comes from ./package.json
+git tag v1.0.0  # this version tag comes from ./package.json
 git push origin master --tags
 ```
 
@@ -124,7 +125,7 @@ git push origin master --tags
 
 ```shell
 git checkout master
-git tag type-v0.7.0  # this version tag comes from ./type/package.json
+git tag type-v1.0.0  # this version tag comes from ./type/package.json
 git push origin master --tags
 ```
 

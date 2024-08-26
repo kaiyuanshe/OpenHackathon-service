@@ -23,24 +23,32 @@ import {
     Hackathon,
     Team,
     TeamListChunk,
+    TeamMemberRole,
+    TeamMemberStatus,
     User
 } from '../model';
 import { searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
 import { HackathonController } from './Hackathon';
+import { PlatformAdminController } from './PlatformAdmin';
+import { TeamMemberController } from './TeamMember';
 
 const store = dataSource.getRepository(Team),
     hackathonStore = dataSource.getRepository(Hackathon);
 
 @JsonController('/hackathon/:name/team')
 export class TeamController {
-    static async ensureMember(userId: number, teamId: number) {
-        const team = await store.findOneBy({
-            id: teamId,
-            createdBy: { id: userId }
-        });
+    static async ensureAdmin(userId: number, teamId: number) {
+        if (
+            !(await TeamMemberController.isAdmin(userId, teamId)) ||
+            !(await PlatformAdminController.isAdmin(userId))
+        )
+            throw new ForbiddenError();
+    }
 
-        if (!team) throw new ForbiddenError();
+    static async ensureMember(userId: number, teamId: number) {
+        if (!(await TeamMemberController.isMember(userId, teamId)))
+            throw new ForbiddenError();
     }
 
     @Post()
@@ -72,6 +80,15 @@ export class TeamController {
 
         await ActivityLogController.logCreate(createdBy, 'Team', saved.id);
 
+        await TeamMemberController.addMember({
+            role: TeamMemberRole.Admin,
+            user: createdBy,
+            description: 'Team Creator',
+            status: TeamMemberStatus.Approved,
+            team: saved,
+            hackathon,
+            createdBy
+        });
         return saved;
     }
 
@@ -109,7 +126,7 @@ export class TeamController {
         });
         if (!team) throw new NotFoundError();
 
-        if (deletedBy.id !== team.createdBy.id) throw new ForbiddenError();
+        await TeamController.ensureAdmin(deletedBy.id, id);
 
         await store.save({ ...team, deletedBy });
         await store.softDelete(id);

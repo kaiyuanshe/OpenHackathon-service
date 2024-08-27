@@ -9,6 +9,7 @@ import { ActivityLogController } from './ActivityLog';
 import { HackathonController } from './Hackathon';
 import { StaffController } from './Staff';
 import { OrganizerController } from './Organizer';
+import { AnnouncementController } from './Announcement';
 import { EnrollmentController } from './Enrollment';
 import { TeamController } from './Team';
 import { TeamMemberController } from './TeamMember';
@@ -21,6 +22,7 @@ export * from './ActivityLog';
 export * from './Hackathon';
 export * from './Staff';
 export * from './Organizer';
+export * from './Announcement';
 export * from './Enrollment';
 export * from './Team';
 export * from './TeamMember';
@@ -35,6 +37,7 @@ export const { swagger, mocker, router } = createAPI({
         StaffController,
         OrganizerController,
         EnrollmentController,
+        AnnouncementController,
         TeamWorkController,
         TeamMemberController,
         TeamController,

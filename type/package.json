@@ -1,6 +1,6 @@
 {
     "name": "@kaiyuanshe/openhackathon-service",
-    "version": "0.16.0",
+    "version": "0.17.0",
     "types": "index.d.ts",
     "dependencies": {
         "@octokit/openapi-types": "^22.2.0",

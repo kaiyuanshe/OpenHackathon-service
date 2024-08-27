@@ -35,6 +35,7 @@
 5. Team management
     1. [Meta](source/controller/Team.ts)
     2. [Member](source/controller/Member.ts)
+    3. [Work](source/controller/Work.ts)
 
 ## Best practice
 

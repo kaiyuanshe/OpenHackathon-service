@@ -5,12 +5,13 @@ import { SqliteConnectionOptions } from 'typeorm/driver/sqlite/SqliteConnectionO
 import { DATABASE_URL, isProduct } from '../utility';
 import { User } from './User';
 import { PlatformAdmin } from './PlatformAdmin';
-import { ActivityLog } from './ActivityLog';
+import { ActivityLog, UserRank } from './ActivityLog';
 import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
 import { Organizer } from './Organizer';
 import { Enrollment } from './Enrollment';
-import { Award } from './Award';
+import { Team } from './Team';
+import { TeamMember } from './TeamMember';
 
 export * from './Base';
 export * from './User';
@@ -21,7 +22,8 @@ export * from './Hackathon';
 export * from './Staff';
 export * from './Organizer';
 export * from './Enrollment';
-export * from './Award';
+export * from './Team';
+export * from './TeamMember';
 
 const { ssl, host, port, user, password, database } = isProduct
     ? parse(DATABASE_URL)
@@ -37,11 +39,13 @@ const commonOptions: Pick<
         User,
         PlatformAdmin,
         ActivityLog,
+        UserRank,
         Hackathon,
         Staff,
         Organizer,
         Enrollment,
-        Award
+        Team,
+        TeamMember
     ],
     migrations: [`${isProduct ? '.data' : 'migration'}/*.ts`]
 };

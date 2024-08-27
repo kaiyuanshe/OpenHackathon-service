@@ -27,7 +27,7 @@ import {
     UserFilter,
     UserListChunk
 } from '../model';
-import { APP_SECRET, searchConditionOf } from '../utility';
+import { JWT_SECRET, searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
 
 const store = dataSource.getRepository(User);
@@ -36,23 +36,23 @@ const store = dataSource.getRepository(User);
 export class UserController {
     static encrypt = (raw: string) =>
         createHash('sha1')
-            .update(APP_SECRET + raw)
+            .update(JWT_SECRET + raw)
             .digest('hex');
 
     static sign = (user: User): User => ({
         ...user,
-        token: sign({ ...user }, APP_SECRET)
+        token: sign({ ...user }, JWT_SECRET)
     });
 
-    static async signUp(data: SignInData) {
+    static async signUp({ email, password }: SignInData) {
         const sum = await store.count();
 
-        const { password, ...user } = await store.save(
-            Object.assign(new User(), data, {
-                password: UserController.encrypt(data.password),
-                roles: [sum ? Role.Client : Role.Administrator]
-            })
-        );
+        const { password: _, ...user } = await store.save({
+            name: email,
+            email,
+            password: UserController.encrypt(password),
+            roles: [sum ? Role.Client : Role.Administrator]
+        });
         await ActivityLogController.logCreate(user, 'User', user.id);
 
         return user;

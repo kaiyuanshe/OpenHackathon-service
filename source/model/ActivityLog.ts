@@ -15,6 +15,8 @@ import { Hackathon } from './Hackathon';
 import { Organizer } from './Organizer';
 import { PlatformAdmin } from './PlatformAdmin';
 import { Staff } from './Staff';
+import { Team } from './Team';
+import { TeamMember } from './TeamMember';
 import { User, UserBase } from './User';
 
 export enum Operation {
@@ -23,13 +25,15 @@ export enum Operation {
     Delete = 'delete'
 }
 
-const LogableTable = {
+export const LogableTable = {
     User,
     PlatformAdmin,
     Hackathon,
     Staff,
     Organizer,
-    Enrollment
+    Enrollment,
+    Team,
+    TeamMember
 };
 const LogableTableEnum = Object.fromEntries(
     Object.entries(LogableTable).map(([key]) => [key, key])
@@ -62,15 +66,6 @@ export class ActivityLogFilter
     @IsEnum(Operation)
     @IsOptional()
     operation?: Operation;
-
-    @IsEnum(LogableTableEnum)
-    @IsOptional()
-    tableName?: keyof typeof LogableTable;
-
-    @IsInt()
-    @Min(1)
-    @IsOptional()
-    recordId?: number;
 }
 
 export class ActivityLogListChunk implements ListChunk<ActivityLog> {

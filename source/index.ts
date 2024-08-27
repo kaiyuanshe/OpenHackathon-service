@@ -1,5 +1,7 @@
-import 'dotenv/config';
 import 'reflect-metadata';
+import { config } from 'dotenv';
+
+config({ path: [`.env.${process.env.NODE_ENV}.local`, '.env.local', '.env'] });
 
 import Koa from 'koa';
 import jwt from 'koa-jwt';
@@ -14,13 +16,13 @@ import {
     UserController
 } from './controller';
 import { dataSource } from './model';
-import { APP_SECRET, isProduct, PORT } from './utility';
+import { JWT_SECRET, isProduct, PORT } from './utility';
 
 const HOST = `localhost:${PORT}`,
     app = new Koa()
         .use(KoaLogger())
         .use(swagger({ exposeSpec: true }))
-        .use(jwt({ secret: APP_SECRET, passthrough: true }));
+        .use(jwt({ secret: JWT_SECRET, passthrough: true }));
 
 if (!isProduct) app.use(mocker());
 

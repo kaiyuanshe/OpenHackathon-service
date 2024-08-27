@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { Column, Entity, ViewColumn, ViewEntity } from 'typeorm';
 
+import { Announcement } from './Announcement';
 import { Base, BaseFilter, InputData, ListChunk } from './Base';
 import { Enrollment } from './Enrollment';
 import { Hackathon } from './Hackathon';
@@ -32,6 +33,7 @@ export const LogableTable = {
     Hackathon,
     Staff,
     Organizer,
+    Announcement,
     Enrollment,
     Team,
     TeamMember,

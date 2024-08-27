@@ -3,6 +3,7 @@ import {
     Body,
     CurrentUser,
     Delete,
+    ForbiddenError,
     Get,
     HttpCode,
     JsonController,
@@ -16,6 +17,7 @@ import {
 import { ResponseSchema } from 'routing-controllers-openapi';
 
 import {
+    Base,
     BaseFilter,
     dataSource,
     Hackathon,
@@ -35,12 +37,6 @@ const store = dataSource.getRepository(Staff),
 @JsonController('/hackathon/:name/:type')
 export class StaffController {
     static async isAdmin(userId: number, hackathonName: string) {
-        const hackathon = await hackathonStore.findOneBy({
-            name: hackathonName,
-            createdBy: { id: userId }
-        });
-        if (hackathon) return true;
-
         const staff = await store.findOneBy({
             hackathon: { name: hackathonName },
             user: { id: userId },
@@ -58,6 +54,17 @@ export class StaffController {
         return !!staff;
     }
 
+    static async addOne(staff: Omit<Staff, keyof Base>) {
+        const saved = await store.save(staff);
+
+        await ActivityLogController.logCreate(
+            staff.createdBy,
+            'Staff',
+            saved.id
+        );
+        return saved;
+    }
+
     @Put('/:uid')
     @HttpCode(201)
     @Authorized()
@@ -71,25 +78,21 @@ export class StaffController {
     ) {
         const [user, hackathon] = await Promise.all([
             userStore.findOneBy({ id: uid }),
-            hackathonStore.findOne({
-                where: { name },
-                relations: ['createdBy']
-            })
+            hackathonStore.findOneBy({ name })
         ]);
         if (!user || !hackathon || !StaffType[type]) throw new NotFoundError();
 
+        if (createdBy.id === uid) throw new ForbiddenError();
+
         await HackathonController.ensureAdmin(createdBy.id, name);
 
-        const saved = await store.save({
+        return StaffController.addOne({
             ...staff,
             type,
             user,
             hackathon,
             createdBy
         });
-        await ActivityLogController.logCreate(createdBy, 'Staff', saved.id);
-
-        return saved;
     }
 
     @Patch('/:uid')
@@ -134,6 +137,8 @@ export class StaffController {
             relations: ['hackathon']
         });
         if (!staff) throw new NotFoundError();
+
+        if (deletedBy.id === uid) throw new ForbiddenError();
 
         await HackathonController.ensureAdmin(deletedBy.id, name);
 

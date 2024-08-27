@@ -12,6 +12,7 @@ import { Organizer } from './Organizer';
 import { Enrollment } from './Enrollment';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
+import { TeamWork } from './TeamWork';
 
 export * from './Base';
 export * from './User';
@@ -24,6 +25,7 @@ export * from './Organizer';
 export * from './Enrollment';
 export * from './Team';
 export * from './TeamMember';
+export * from './TeamWork';
 
 const { ssl, host, port, user, password, database } = isProduct
     ? parse(DATABASE_URL)
@@ -45,7 +47,8 @@ const commonOptions: Pick<
         Organizer,
         Enrollment,
         Team,
-        TeamMember
+        TeamMember,
+        TeamWork
     ],
     migrations: [`${isProduct ? '.data' : 'migration'}/*.ts`]
 };

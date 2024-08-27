@@ -17,6 +17,7 @@ import { PlatformAdmin } from './PlatformAdmin';
 import { Staff } from './Staff';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
+import { TeamWork } from './TeamWork';
 import { User, UserBase } from './User';
 
 export enum Operation {
@@ -33,7 +34,8 @@ export const LogableTable = {
     Organizer,
     Enrollment,
     Team,
-    TeamMember
+    TeamMember,
+    TeamWork
 };
 const LogableTableEnum = Object.fromEntries(
     Object.entries(LogableTable).map(([key]) => [key, key])

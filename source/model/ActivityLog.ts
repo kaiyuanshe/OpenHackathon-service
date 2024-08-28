@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 import { Column, Entity, ViewColumn, ViewEntity } from 'typeorm';
 
+import { Announcement } from './Announcement';
 import { Base, BaseFilter, InputData, ListChunk } from './Base';
 import { Enrollment } from './Enrollment';
 import { Hackathon } from './Hackathon';
@@ -17,6 +18,7 @@ import { PlatformAdmin } from './PlatformAdmin';
 import { Staff } from './Staff';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
+import { TeamWork } from './TeamWork';
 import { User, UserBase } from './User';
 
 export enum Operation {
@@ -31,9 +33,11 @@ export const LogableTable = {
     Hackathon,
     Staff,
     Organizer,
+    Announcement,
     Enrollment,
     Team,
-    TeamMember
+    TeamMember,
+    TeamWork
 };
 const LogableTableEnum = Object.fromEntries(
     Object.entries(LogableTable).map(([key]) => [key, key])

@@ -22,6 +22,7 @@ import {
     Hackathon,
     HackathonFilter,
     HackathonListChunk,
+    StaffType,
     User
 } from '../model';
 import { searchConditionOf } from '../utility';
@@ -125,6 +126,13 @@ export class HackathonController {
 
         await ActivityLogController.logCreate(createdBy, 'Hackathon', saved.id);
 
+        await StaffController.addOne({
+            type: StaffType.Admin,
+            user: createdBy,
+            description: 'Hackathon Creator',
+            hackathon: saved,
+            createdBy
+        });
         return saved;
     }
 

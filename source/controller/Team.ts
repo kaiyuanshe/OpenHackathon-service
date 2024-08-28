@@ -80,7 +80,7 @@ export class TeamController {
 
         await ActivityLogController.logCreate(createdBy, 'Team', saved.id);
 
-        await TeamMemberController.addMember({
+        await TeamMemberController.addOne({
             role: TeamMemberRole.Admin,
             user: createdBy,
             description: 'Team Creator',

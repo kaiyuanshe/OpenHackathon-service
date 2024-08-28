@@ -9,9 +9,11 @@ import { ActivityLog, UserRank } from './ActivityLog';
 import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
 import { Organizer } from './Organizer';
+import { Announcement } from './Announcement';
 import { Enrollment } from './Enrollment';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
+import { TeamWork } from './TeamWork';
 
 export * from './Base';
 export * from './User';
@@ -21,9 +23,11 @@ export * from './ActivityLog';
 export * from './Hackathon';
 export * from './Staff';
 export * from './Organizer';
+export * from './Announcement';
 export * from './Enrollment';
 export * from './Team';
 export * from './TeamMember';
+export * from './TeamWork';
 
 const { ssl, host, port, user, password, database } = isProduct
     ? parse(DATABASE_URL)
@@ -43,9 +47,11 @@ const commonOptions: Pick<
         Hackathon,
         Staff,
         Organizer,
+        Announcement,
         Enrollment,
         Team,
-        TeamMember
+        TeamMember,
+        TeamWork
     ],
     migrations: [`${isProduct ? '.data' : 'migration'}/*.ts`]
 };

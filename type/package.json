@@ -1,6 +1,14 @@
 {
     "name": "@kaiyuanshe/openhackathon-service",
-    "version": "0.16.0",
+    "version": "0.18.0",
+    "homepage": "https://github.com/kaiyuanshe/OpenHackathon-service#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kaiyuanshe/OpenHackathon-service.git"
+    },
+    "bugs": {
+        "url": "https://github.com/kaiyuanshe/OpenHackathon-service/issues"
+    },
     "types": "index.d.ts",
     "dependencies": {
         "@octokit/openapi-types": "^22.2.0",

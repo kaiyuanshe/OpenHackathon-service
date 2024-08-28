@@ -42,12 +42,6 @@ const store = dataSource.getRepository(TeamMember),
 @JsonController('/hackathon/:name/team/:id/member')
 export class TeamMemberController {
     static async isAdmin(userId: number, teamId: number) {
-        const team = await teamStore.findOneBy({
-            id: teamId,
-            createdBy: { id: userId }
-        });
-        if (team) return true;
-
         const admin = await store.findOneBy({
             team: { id: teamId },
             user: { id: userId },
@@ -64,15 +58,15 @@ export class TeamMemberController {
         return !!member;
     }
 
-    static async addMember(data: Omit<TeamMember, keyof Base>) {
+    static async addOne(member: Omit<TeamMember, keyof Base>) {
         const saved = await store.save({
-            status: data.team.autoApprove
+            status: member.team.autoApprove
                 ? TeamMemberStatus.Approved
                 : TeamMemberStatus.PendingApproval,
-            ...data
+            ...member
         });
         await ActivityLogController.logCreate(
-            data.createdBy,
+            member.createdBy,
             'TeamMember',
             saved.id
         );
@@ -95,9 +89,11 @@ export class TeamMemberController {
         ]);
         if (!user || !team) throw new NotFoundError();
 
+        if (createdBy.id === uid) throw new ForbiddenError();
+
         await TeamController.ensureMember(createdBy.id, id);
 
-        return TeamMemberController.addMember({
+        return TeamMemberController.addOne({
             role,
             user,
             description,
@@ -126,7 +122,7 @@ export class TeamMemberController {
 
         await HackathonController.ensureEnrolled(createdBy.id, name);
 
-        return TeamMemberController.addMember({
+        return TeamMemberController.addOne({
             user: createdBy,
             description,
             team,
@@ -152,9 +148,11 @@ export class TeamMemberController {
 
         const authorization = { role, status };
 
-        if (isNotEmptyObject(authorization))
+        if (isNotEmptyObject(authorization)) {
+            if (updatedBy.id === uid) throw new ForbiddenError();
+
             await TeamController.ensureAdmin(updatedBy.id, id);
-        else await TeamController.ensureMember(updatedBy.id, id);
+        } else await TeamController.ensureMember(updatedBy.id, id);
 
         const saved = await store.save({
             ...member,
@@ -183,6 +181,8 @@ export class TeamMemberController {
             user: { id: uid }
         });
         if (!member) throw new NotFoundError();
+
+        if (deletedBy.id === uid) throw new ForbiddenError();
 
         await TeamController.ensureMember(deletedBy.id, id);
 

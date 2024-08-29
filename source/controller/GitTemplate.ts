@@ -1,3 +1,4 @@
+import { RepositoryModel } from 'mobx-github';
 import {
     Authorized,
     Body,
@@ -18,21 +19,39 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 import {
     BaseFilter,
     dataSource,
-    GitRepository,
     GitTemplate,
     GitTemplateListChunk,
     Hackathon,
+    HackathonBase,
     User
 } from '../model';
-import { githubAPI, searchConditionOf } from '../utility';
+import { searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
 import { HackathonController } from './Hackathon';
 
 const store = dataSource.getRepository(GitTemplate),
     hackathonStore = dataSource.getRepository(Hackathon);
+const repositoryStore = new RepositoryModel();
 
 @JsonController('/hackathon/:name/git-template')
 export class GitTemplateController {
+    static async getRepository(
+        URI: string
+    ): Promise<Omit<GitTemplate, keyof HackathonBase>> {
+        const path = URI.replace(
+            new RegExp(String.raw`^https://github.com/`),
+            'repos'
+        );
+        const repository = await repositoryStore.getOne(path, ['languages']);
+
+        const { name, full_name, html_url, default_branch } = repository,
+            { languages, topics, description, homepage } = repository;
+        return {
+            ...{ name, full_name, html_url, default_branch },
+            ...{ languages, topics, description, homepage }
+        };
+    }
+
     @Post()
     @Authorized()
     @HttpCode(201)
@@ -48,13 +67,9 @@ export class GitTemplateController {
 
         await HackathonController.ensureAdmin(createdBy.id, name);
 
-        const path = html_url.replace(
-            new RegExp(String.raw`^https://github.com`),
-            'repos'
-        );
-        const { body } = await githubAPI.get<GitRepository>(path);
+        const repository = await GitTemplateController.getRepository(html_url);
 
-        const saved = await store.save({ ...body, hackathon, createdBy });
+        const saved = await store.save({ ...repository, hackathon, createdBy });
 
         await ActivityLogController.logCreate(
             createdBy,

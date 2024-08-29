@@ -3,28 +3,20 @@ import {
     IsEnum,
     IsInt,
     IsOptional,
-    IsString,
     Min,
     ValidateNested
 } from 'class-validator';
 import { Column, Entity } from 'typeorm';
 
-import { HackathonBase } from './Hackathon';
 import { BaseFilter, InputData, ListChunk } from './Base';
+import { HackathonBase } from './Hackathon';
+import { Extension } from './Questionnaire';
 
 export enum EnrollmentStatus {
     None = 'none',
     PendingApproval = 'pendingApproval',
     Approved = 'approved',
     Rejected = 'rejected'
-}
-
-export class Extension {
-    @IsString()
-    name: string;
-
-    @IsString()
-    value: string;
 }
 
 @Entity()

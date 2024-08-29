@@ -12,15 +12,16 @@ import { Column, Entity, ViewColumn, ViewEntity } from 'typeorm';
 import { Announcement } from './Announcement';
 import { Base, BaseFilter, InputData, ListChunk } from './Base';
 import { Enrollment } from './Enrollment';
+import { GitTemplate } from './GitTemplate';
 import { Hackathon } from './Hackathon';
 import { Organizer } from './Organizer';
 import { PlatformAdmin } from './PlatformAdmin';
+import { Questionnaire } from './Questionnaire';
 import { Staff } from './Staff';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
 import { TeamWork } from './TeamWork';
 import { User, UserBase } from './User';
-import { GitTemplate } from './GitTemplate';
 
 export enum Operation {
     Create = 'create',
@@ -36,6 +37,7 @@ export const LogableTable = {
     Organizer,
     Announcement,
     GitTemplate,
+    Questionnaire,
     Enrollment,
     Team,
     TeamMember,

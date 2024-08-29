@@ -1,4 +1,4 @@
-import { Entity, Column } from 'typeorm';
+import { Type } from 'class-transformer';
 import {
     IsEnum,
     IsInt,
@@ -8,10 +8,11 @@ import {
     Min,
     ValidateNested
 } from 'class-validator';
+import { Column, Entity } from 'typeorm';
 
-import { TeamBase } from './Team';
 import { BaseFilter, InputData, ListChunk } from './Base';
-import { Type } from 'class-transformer';
+import { GitTemplate } from './GitTemplate';
+import { TeamBase } from './Team';
 
 export enum TeamWorkType {
     Image = 'image',
@@ -38,6 +39,12 @@ export class TeamWork extends TeamBase {
     @IsString()
     @Column('text')
     description: string;
+
+    @Type(() => GitTemplate)
+    @ValidateNested()
+    @IsOptional()
+    @Column('simple-json', { nullable: true })
+    gitRepository?: GitTemplate;
 }
 
 export class TeamWorkFilter

@@ -1,9 +1,9 @@
+import { githubClient, User as GitHubUser } from 'mobx-github';
 import { Body, JsonController, Post } from 'routing-controllers';
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { isDeepStrictEqual } from 'util';
 
-import { dataSource, GitHubUser, OAuthSignInData, User } from '../model';
-import { githubAPI } from '../utility';
+import { dataSource, OAuthSignInData, User } from '../model';
 import { ActivityLogController } from './ActivityLog';
 import { UserController } from './User';
 
@@ -14,7 +14,7 @@ export class OauthController {
     @Post('/GitHub')
     @ResponseSchema(User)
     async signInWithGithub(@Body() { accessToken }: OAuthSignInData) {
-        const { body } = await githubAPI.get<GitHubUser>('user', {
+        const { body } = await githubClient.get<GitHubUser>('user', {
             Authorization: `Bearer ${accessToken}`
         });
         const { email, login, avatar_url } = body!;

@@ -1,4 +1,3 @@
-import { components } from '@octokit/openapi-types';
 import { Type } from 'class-transformer';
 import {
     IsInt,
@@ -8,13 +7,14 @@ import {
     Min,
     ValidateNested
 } from 'class-validator';
+import { Repository } from 'mobx-github';
 import { Column, Entity } from 'typeorm';
 
 import { ListChunk } from './Base';
 import { HackathonBase } from './Hackathon';
 
 export type GitRepository = Pick<
-    components['schemas']['repository'],
+    Repository,
     | 'name'
     | 'full_name'
     | 'html_url'

@@ -31,7 +31,9 @@
     1. [Meta](source/controller/Hackathon.ts)
     2. [Staff](source/controller/Staff.ts)
     3. [Organizer](source/controller/Organizer.ts)
-    4. [Enrollment](source/controller/Enrollment.ts)
+    4. [Announcement](source/controller/Announcement.ts)
+    5. [Git template](source/controller/GitTemplate.ts)
+    6. [Enrollment](source/controller/Enrollment.ts)
 5. Team management
     1. [Meta](source/controller/Team.ts)
     2. [Member](source/controller/Member.ts)

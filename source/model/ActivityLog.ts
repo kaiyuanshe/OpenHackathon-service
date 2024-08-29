@@ -20,6 +20,7 @@ import { Team } from './Team';
 import { TeamMember } from './TeamMember';
 import { TeamWork } from './TeamWork';
 import { User, UserBase } from './User';
+import { GitTemplate } from './GitTemplate';
 
 export enum Operation {
     Create = 'create',
@@ -34,6 +35,7 @@ export const LogableTable = {
     Staff,
     Organizer,
     Announcement,
+    GitTemplate,
     Enrollment,
     Team,
     TeamMember,

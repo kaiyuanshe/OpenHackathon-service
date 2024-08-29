@@ -56,6 +56,9 @@ importers:
       koagger:
         specifier: ^0.3.0
         version: 0.3.0(@types/koa@2.15.0)
+      koajax:
+        specifier: ^2.0.0
+        version: 2.0.0(typescript@5.5.4)
       marked:
         specifier: ^14.1.0
         version: 14.1.0
@@ -82,7 +85,7 @@ importers:
         version: 2.7.0
       typeorm:
         specifier: npm:@helveg/typeorm@^0.3.20
-        version: '@helveg/typeorm@0.3.20(pg@8.12.0)(reflect-metadata@0.2.2)(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4))'
+        version: '@helveg/typeorm@0.3.20(pg@8.12.0)(reflect-metadata@0.2.2)(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@20.16.2)(typescript@5.5.4))'
       web-utility:
         specifier: ^4.4.0
         version: 4.4.0(typescript@5.5.4)
@@ -97,8 +100,8 @@ importers:
         specifier: ^3.1.5
         version: 3.1.5
       '@types/node':
-        specifier: ^20.16.1
-        version: 20.16.1
+        specifier: ^20.16.2
+        version: 20.16.2
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.3.0
         version: 8.3.0(@typescript-eslint/parser@8.3.0(eslint@8.57.0)(typescript@5.5.4))(eslint@8.57.0)(typescript@5.5.4)
@@ -113,7 +116,7 @@ importers:
         version: 12.1.1(eslint@8.57.0)
       get-git-folder:
         specifier: ^0.1.2
-        version: 0.1.2(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.1)
+        version: 0.1.2(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.2)
       husky:
         specifier: ^9.1.5
         version: 9.1.5
@@ -128,7 +131,7 @@ importers:
         version: 5.1.7
       ts-node-dev:
         specifier: ^2.0.0
-        version: 2.0.0(@types/node@20.16.1)(typescript@5.5.4)
+        version: 2.0.0(@types/node@20.16.2)(typescript@5.5.4)
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -501,8 +504,8 @@ packages:
   '@types/node@18.19.44':
     resolution: {integrity: sha512-ZsbGerYg72WMXUIE9fYxtvfzLEuq6q8mKERdWFnqTmOvudMxnz+CBNRoOwJ2kNpFOncrKjT1hZwxjlFgQ9qvQA==}
 
-  '@types/node@20.16.1':
-    resolution: {integrity: sha512-zJDo7wEadFtSyNz5QITDfRcrhqDvQI1xQNQ0VoizPjM/dVAODqqIUWbJPkvsxmTI0MYRGRikcdjMPhOssnPejQ==}
+  '@types/node@20.16.2':
+    resolution: {integrity: sha512-91s/n4qUPV/wg8eE9KHYW1kouTfDk2FPGjXbBMfRWP/2vg1rCXNQL1OCabwGs0XSdukuK+MwCDXE30QpSeMUhQ==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -1512,6 +1515,9 @@ packages:
   iterable-observer@1.0.1:
     resolution: {integrity: sha512-qy2Kuf1drKVmWgWaRsqdM8EHanAW4xS37j1nFdVP07qiN0Mj4D5sl9dYA8mZJdX/d3De4bhZoFuVWXvcOM1usg==}
 
+  iterable-observer@1.1.0:
+    resolution: {integrity: sha512-3H7N2wUtGpz5A/y4MFaP15sXxQyBTgnmq/LFMUbOErj+V9VgJY53Hd23mj33YEDap6qF22OEoV+19ATh+3+sQg==}
+
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
@@ -1610,6 +1616,12 @@ packages:
 
   koajax@1.1.2:
     resolution: {integrity: sha512-TGWJhGpojfSYdqGIKK8CWwMhUY1LYDyvodt6LywHVYEH6qq38/3DgW+FKTCV88O59G0J4W2XFbBTF8nvZ/J/nw==}
+    deprecated: Don't use versions with old API & bugs
+    peerDependencies:
+      jsdom: '>=21'
+
+  koajax@2.0.0:
+    resolution: {integrity: sha512-05kjwLO43jb9/dLZfIBjkMvGRQd2j9lRnyR+ijin33tmqzSQIrSzYo9pfn/jdbrlcMHOHoHJGZbQLt8zuGGuqA==}
     peerDependencies:
       jsdom: '>=21'
 
@@ -2973,7 +2985,7 @@ snapshots:
 
   '@hapi/bourne@3.0.0': {}
 
-  '@helveg/typeorm@0.3.20(pg@8.12.0)(reflect-metadata@0.2.2)(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4))':
+  '@helveg/typeorm@0.3.20(pg@8.12.0)(reflect-metadata@0.2.2)(sqlite3@5.1.7)(ts-node@10.9.2(@types/node@20.16.2)(typescript@5.5.4))':
     dependencies:
       '@sqltools/formatter': 1.2.5
       app-root-path: 3.1.0
@@ -2993,7 +3005,7 @@ snapshots:
     optionalDependencies:
       pg: 8.12.0
       sqlite3: 5.1.7
-      ts-node: 10.9.2(@types/node@20.16.1)(typescript@5.5.4)
+      ts-node: 10.9.2(@types/node@20.16.2)(typescript@5.5.4)
     transitivePeerDependencies:
       - supports-color
 
@@ -3105,11 +3117,11 @@ snapshots:
     dependencies:
       tslib: 2.7.0
 
-  '@tech_query/node-toolkit@1.2.1(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.1)':
+  '@tech_query/node-toolkit@1.2.1(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.2)':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-transform-modules-commonjs': 7.24.8(@babel/core@7.25.2)
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
       cross-spawn: 7.0.3
       file-type: 16.5.4
       fs-extra: 11.2.0
@@ -3137,16 +3149,16 @@ snapshots:
 
   '@types/accepts@1.3.7':
     dependencies:
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/content-disposition@0.5.8': {}
 
@@ -3155,11 +3167,11 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/express': 4.17.21
       '@types/keygrip': 1.0.6
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/express-serve-static-core@4.19.5':
     dependencies:
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
       '@types/qs': 6.9.15
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -3174,7 +3186,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/http-assert@1.5.5': {}
 
@@ -3184,11 +3196,11 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/jsonwebtoken@9.0.6':
     dependencies:
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/keygrip@1.0.6': {}
 
@@ -3209,7 +3221,7 @@ snapshots:
       '@types/http-errors': 2.0.4
       '@types/keygrip': 1.0.6
       '@types/koa-compose': 3.2.8
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/mime@1.3.5': {}
 
@@ -3219,7 +3231,7 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
-  '@types/node@20.16.1':
+  '@types/node@20.16.2':
     dependencies:
       undici-types: 6.19.8
 
@@ -3234,12 +3246,12 @@ snapshots:
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
 
   '@types/serve-static@1.15.7':
     dependencies:
       '@types/http-errors': 2.0.4
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
       '@types/send': 0.17.4
 
   '@types/strip-bom@3.0.0': {}
@@ -3654,9 +3666,9 @@ snapshots:
 
   colorette@2.0.20: {}
 
-  commander-jsx@0.6.9(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.1):
+  commander-jsx@0.6.9(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.2):
     dependencies:
-      '@tech_query/node-toolkit': 1.2.1(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.1)
+      '@tech_query/node-toolkit': 1.2.1(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.2)
       tslib: 2.7.0
     transitivePeerDependencies:
       - '@babel/plugin-transform-modules-commonjs'
@@ -4119,9 +4131,9 @@ snapshots:
 
   get-east-asian-width@1.2.0: {}
 
-  get-git-folder@0.1.2(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.1):
+  get-git-folder@0.1.2(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.2):
     dependencies:
-      commander-jsx: 0.6.9(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.1)
+      commander-jsx: 0.6.9(@babel/plugin-transform-modules-commonjs@7.24.8(@babel/core@7.25.2))(@types/node@20.16.2)
       zx: 7.2.3
     transitivePeerDependencies:
       - '@babel/plugin-transform-modules-commonjs'
@@ -4369,6 +4381,10 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.12
 
+  iterable-observer@1.1.0:
+    dependencies:
+      '@swc/helpers': 0.5.12
+
   jackspeak@3.4.3:
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -4528,6 +4544,16 @@ snapshots:
       '@swc/helpers': 0.5.12
       iterable-observer: 1.0.1
       regenerator-runtime: 0.14.1
+      web-utility: 4.4.0(typescript@5.5.4)
+    transitivePeerDependencies:
+      - typescript
+
+  koajax@2.0.0(typescript@5.5.4):
+    dependencies:
+      '@swc/helpers': 0.5.12
+      iterable-observer: 1.1.0
+      regenerator-runtime: 0.14.1
+      web-streams-polyfill: 4.0.0
       web-utility: 4.4.0(typescript@5.5.4)
     transitivePeerDependencies:
       - typescript
@@ -5537,7 +5563,7 @@ snapshots:
     dependencies:
       typescript: 5.5.4
 
-  ts-node-dev@2.0.0(@types/node@20.16.1)(typescript@5.5.4):
+  ts-node-dev@2.0.0(@types/node@20.16.2)(typescript@5.5.4):
     dependencies:
       chokidar: 3.6.0
       dynamic-dedupe: 0.3.0
@@ -5547,7 +5573,7 @@ snapshots:
       rimraf: 2.7.1
       source-map-support: 0.5.21
       tree-kill: 1.2.2
-      ts-node: 10.9.2(@types/node@20.16.1)(typescript@5.5.4)
+      ts-node: 10.9.2(@types/node@20.16.2)(typescript@5.5.4)
       tsconfig: 7.0.0
       typescript: 5.5.4
     transitivePeerDependencies:
@@ -5555,14 +5581,14 @@ snapshots:
       - '@swc/wasm'
       - '@types/node'
 
-  ts-node@10.9.2(@types/node@20.16.1)(typescript@5.5.4):
+  ts-node@10.9.2(@types/node@20.16.2)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 20.16.1
+      '@types/node': 20.16.2
       acorn: 8.12.1
       acorn-walk: 8.3.3
       arg: 4.1.3

@@ -10,6 +10,7 @@ import { Hackathon } from './Hackathon';
 import { Staff } from './Staff';
 import { Organizer } from './Organizer';
 import { Announcement } from './Announcement';
+import { GitTemplate } from './GitTemplate';
 import { Enrollment } from './Enrollment';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
@@ -24,6 +25,7 @@ export * from './Hackathon';
 export * from './Staff';
 export * from './Organizer';
 export * from './Announcement';
+export * from './GitTemplate';
 export * from './Enrollment';
 export * from './Team';
 export * from './TeamMember';
@@ -48,6 +50,7 @@ const commonOptions: Pick<
         Staff,
         Organizer,
         Announcement,
+        GitTemplate,
         Enrollment,
         Team,
         TeamMember,

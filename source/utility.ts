@@ -1,3 +1,4 @@
+import { HTTPClient } from 'koajax';
 import { FindOptionsWhere, Like } from 'typeorm';
 
 import { Base } from './model';
@@ -14,3 +15,8 @@ export const searchConditionOf = <T extends Base>(
     keywords
         ? keys.map(key => ({ [key]: Like(`%${keywords}%`), ...filter }))
         : filter;
+
+export const githubAPI = new HTTPClient({
+    baseURI: 'https://api.github.com',
+    responseType: 'json'
+});

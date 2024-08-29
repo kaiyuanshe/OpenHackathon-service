@@ -3,6 +3,7 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 import { isDeepStrictEqual } from 'util';
 
 import { dataSource, GitHubUser, OAuthSignInData, User } from '../model';
+import { githubAPI } from '../utility';
 import { ActivityLogController } from './ActivityLog';
 import { UserController } from './User';
 
@@ -13,11 +14,10 @@ export class OauthController {
     @Post('/GitHub')
     @ResponseSchema(User)
     async signInWithGithub(@Body() { accessToken }: OAuthSignInData) {
-        const response = await fetch('https://api.github.com/user', {
-            headers: { Authorization: `Bearer ${accessToken}` }
+        const { body } = await githubAPI.get<GitHubUser>('user', {
+            Authorization: `Bearer ${accessToken}`
         });
-        const { email, login, avatar_url } =
-            (await response.json()) as GitHubUser;
+        const { email, login, avatar_url } = body!;
         const user =
             (await store.findOneBy({ email })) ||
             (await UserController.signUp({ email, password: accessToken }));

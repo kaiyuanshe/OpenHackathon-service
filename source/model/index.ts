@@ -11,7 +11,7 @@ import { Staff } from './Staff';
 import { Organizer } from './Organizer';
 import { Announcement } from './Announcement';
 import { GitTemplate } from './GitTemplate';
-import { Questionnaire } from './Questionnaire';
+import { Questionnaire, Standard } from './Questionnaire';
 import { Enrollment } from './Enrollment';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
@@ -54,6 +54,7 @@ const commonOptions: Pick<
         Announcement,
         GitTemplate,
         Questionnaire,
+        Standard,
         Enrollment,
         Team,
         TeamMember,

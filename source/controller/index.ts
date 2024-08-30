@@ -11,7 +11,7 @@ import { StaffController } from './Staff';
 import { OrganizerController } from './Organizer';
 import { AnnouncementController } from './Announcement';
 import { GitTemplateController } from './GitTemplate';
-import { QuestionnaireController } from './Questionnaire';
+import { SurveyController } from './Questionnaire';
 import { EnrollmentController } from './Enrollment';
 import { TeamController } from './Team';
 import { TeamMemberController } from './TeamMember';
@@ -41,7 +41,7 @@ export const { swagger, mocker, router } = createAPI({
         StaffController,
         OrganizerController,
         EnrollmentController,
-        QuestionnaireController,
+        SurveyController,
         GitTemplateController,
         AnnouncementController,
         TeamWorkController,

@@ -10,7 +10,9 @@ import {
 } from 'class-validator';
 import { Column, Entity } from 'typeorm';
 
+import { ListChunk } from './Base';
 import { HackathonBase } from './Hackathon';
+import { TeamBase } from './Team';
 
 export enum QuestionType {
     Text = 'text',
@@ -42,12 +44,12 @@ export class Question {
     required?: boolean;
 }
 
-export class Extension {
+export class Answer {
     @IsString()
-    name: string;
+    title: string;
 
     @IsString()
-    value: string;
+    content: string;
 }
 
 @Entity()
@@ -78,4 +80,40 @@ export class Standard extends HackathonBase {
     @ValidateNested({ each: true })
     @Column('simple-json')
     dimensions: Dimension[];
+}
+
+export class Score {
+    @IsString()
+    dimension: string;
+
+    @IsInt()
+    @Min(0)
+    score: number;
+
+    @IsString()
+    @IsOptional()
+    reason?: string;
+}
+
+@Entity()
+export class Evaluation extends TeamBase {
+    @Type(() => Score)
+    @ValidateNested({ each: true })
+    @Column('simple-json')
+    scores: Score[];
+
+    @IsString()
+    @IsOptional()
+    @Column({ nullable: true })
+    comment?: string;
+}
+
+export class EvaluationListChunk implements ListChunk<Evaluation> {
+    @IsInt()
+    @Min(0)
+    count: number;
+
+    @Type(() => Evaluation)
+    @ValidateNested({ each: true })
+    list: Evaluation[];
 }

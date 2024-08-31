@@ -16,7 +16,7 @@ import { GitTemplate } from './GitTemplate';
 import { Hackathon } from './Hackathon';
 import { Organizer } from './Organizer';
 import { PlatformAdmin } from './PlatformAdmin';
-import { Questionnaire, Standard } from './Questionnaire';
+import { Evaluation, Questionnaire, Standard } from './Questionnaire';
 import { Staff } from './Staff';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
@@ -42,7 +42,8 @@ export const LogableTable = {
     Enrollment,
     Team,
     TeamMember,
-    TeamWork
+    TeamWork,
+    Evaluation
 };
 const LogableTableEnum = Object.fromEntries(
     Object.entries(LogableTable).map(([key]) => [key, key])

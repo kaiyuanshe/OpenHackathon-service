@@ -43,6 +43,11 @@ export class HackathonController {
             throw new ForbiddenError();
     }
 
+    static async ensureJudge(userId: number, hackathonName: string) {
+        if (!(await StaffController.isJudge(userId, hackathonName)))
+            throw new ForbiddenError();
+    }
+
     static async ensureEnrolled(userId: number, hackathonName: string) {
         if (!(await EnrollmentController.isEnrolled(userId, hackathonName)))
             throw new ForbiddenError();

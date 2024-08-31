@@ -11,7 +11,7 @@ import { Staff } from './Staff';
 import { Organizer } from './Organizer';
 import { Announcement } from './Announcement';
 import { GitTemplate } from './GitTemplate';
-import { Questionnaire, Standard } from './Questionnaire';
+import { Evaluation, Questionnaire, Standard } from './Questionnaire';
 import { Enrollment } from './Enrollment';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
@@ -58,7 +58,8 @@ const commonOptions: Pick<
         Enrollment,
         Team,
         TeamMember,
-        TeamWork
+        TeamWork,
+        Evaluation
     ],
     migrations: [`${isProduct ? '.data' : 'migration'}/*.ts`]
 };

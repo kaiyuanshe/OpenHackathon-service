@@ -33,12 +33,13 @@
     3. [Organizer](source/controller/Organizer.ts)
     4. [Announcement](source/controller/Announcement.ts)
     5. [Git template](source/controller/GitTemplate.ts)
-    6. [Questionnaire](source/controller/Questionnaire.ts)
+    6. [Questionnaire & Standard](source/controller/Questionnaire.ts)
     7. [Enrollment](source/controller/Enrollment.ts)
 5. Team management
     1. [Meta](source/controller/Team.ts)
     2. [Member](source/controller/Member.ts)
     3. [Work](source/controller/Work.ts)
+    4. [Evaluation](source/controller/Evaluation.ts)
 
 ## Best practice
 

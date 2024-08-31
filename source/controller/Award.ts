@@ -26,7 +26,8 @@ import {
     SignInData,
     User,
     UserFilter,
-    UserListChunk
+    UserListChunk,
+    Award
 } from '../model';
 import { searchConditionOf } from '../utility';
 

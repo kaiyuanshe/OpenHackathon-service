@@ -15,22 +15,32 @@ import {
     QueryParams
 } from 'routing-controllers';
 import { ResponseSchema } from 'routing-controllers-openapi';
+import { FindOptionsWhere, IsNull, Not } from 'typeorm';
 
 import {
+    BaseFilter,
     dataSource,
     TeamWork,
     TeamWorkFilter,
     TeamWorkListChunk,
+    TeamWorkType,
     User
 } from '../model';
 import { searchConditionOf } from '../utility';
 import { ActivityLogController } from './ActivityLog';
+import { GitTemplateController } from './GitTemplate';
 import { TeamController } from './Team';
 
 const store = dataSource.getRepository(TeamWork);
 
 @JsonController('/hackathon/:name/team/:tid/work')
 export class TeamWorkController {
+    @Get('/git-repository')
+    @ResponseSchema(TeamWorkListChunk)
+    getGitList(@QueryParams() filter: BaseFilter) {
+        return this.queryList(filter, { gitRepository: Not(IsNull()) });
+    }
+
     @Post()
     @Authorized()
     @HttpCode(201)
@@ -48,8 +58,16 @@ export class TeamWorkController {
 
         await TeamController.ensureMember(createdBy.id, tid);
 
+        if (
+            work.type === TeamWorkType.Website &&
+            work.url.startsWith('https://github.com/')
+        )
+            var gitRepository = await GitTemplateController.getRepository(
+                work.url
+            );
         const saved = await store.save({
             ...work,
+            gitRepository,
             team,
             hackathon: team.hackathon,
             createdBy
@@ -107,16 +125,14 @@ export class TeamWorkController {
         return store.findOneBy({ id });
     }
 
-    @Get()
-    @ResponseSchema(TeamWorkListChunk)
-    async getList(
-        @QueryParams()
-        { type, keywords, pageSize, pageIndex }: TeamWorkFilter
+    async queryList(
+        { keywords, pageSize, pageIndex }: BaseFilter,
+        requiredCondition: FindOptionsWhere<TeamWork>
     ) {
         const where = searchConditionOf<TeamWork>(
-            ['title', 'description'],
+            ['title', 'description', 'url', 'gitRepository'],
             keywords,
-            { type }
+            requiredCondition
         );
         const [list, count] = await store.findAndCount({
             where,
@@ -124,5 +140,11 @@ export class TeamWorkController {
             take: pageSize
         });
         return { list, count };
+    }
+
+    @Get()
+    @ResponseSchema(TeamWorkListChunk)
+    getList(@QueryParams() { type, ...filter }: TeamWorkFilter) {
+        return this.queryList(filter, { type });
     }
 }

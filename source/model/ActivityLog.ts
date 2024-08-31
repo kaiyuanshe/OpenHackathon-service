@@ -12,9 +12,11 @@ import { Column, Entity, ViewColumn, ViewEntity } from 'typeorm';
 import { Announcement } from './Announcement';
 import { Base, BaseFilter, InputData, ListChunk } from './Base';
 import { Enrollment } from './Enrollment';
+import { GitTemplate } from './GitTemplate';
 import { Hackathon } from './Hackathon';
 import { Organizer } from './Organizer';
 import { PlatformAdmin } from './PlatformAdmin';
+import { Evaluation, Questionnaire, Standard } from './Questionnaire';
 import { Staff } from './Staff';
 import { Team } from './Team';
 import { TeamMember } from './TeamMember';
@@ -34,10 +36,14 @@ export const LogableTable = {
     Staff,
     Organizer,
     Announcement,
+    GitTemplate,
+    Questionnaire,
+    Standard,
     Enrollment,
     Team,
     TeamMember,
-    TeamWork
+    TeamWork,
+    Evaluation
 };
 const LogableTableEnum = Object.fromEntries(
     Object.entries(LogableTable).map(([key]) => [key, key])

@@ -2,6 +2,7 @@ import {
     Authorized,
     Body,
     CurrentUser,
+    ForbiddenError,
     Get,
     HttpCode,
     JsonController,
@@ -76,16 +77,23 @@ export class EnrollmentController {
     async createOne(
         @CurrentUser() createdBy: User,
         @Param('name') name: string,
-        @Body() { extensions }: Enrollment
+        @Body() { form }: Enrollment
     ) {
-        const hackathon = await hackathonStore.findOneBy({ name });
+        const hackathon = await hackathonStore.findOneBy({ name }),
+            now = Date.now();
 
         if (!hackathon) throw new NotFoundError();
+
+        if (
+            now < +new Date(hackathon.enrollmentStartedAt) ||
+            now > +new Date(hackathon.enrollmentEndedAt)
+        )
+            throw new ForbiddenError('Not in enrollment period');
 
         const saved = await store.save({
             createdBy,
             hackathon,
-            extensions,
+            form,
             status: hackathon.autoApprove
                 ? EnrollmentStatus.Approved
                 : EnrollmentStatus.PendingApproval
@@ -105,7 +113,7 @@ export class EnrollmentController {
         { status, keywords, pageSize, pageIndex }: EnrollmentFilter
     ) {
         const where = searchConditionOf<Enrollment>(
-            ['extensions'],
+            ['form'],
             keywords,
             status && { status }
         );

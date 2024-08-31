@@ -10,7 +10,7 @@ import { Column, Entity } from 'typeorm';
 
 import { BaseFilter, InputData, ListChunk } from './Base';
 import { HackathonBase } from './Hackathon';
-import { Extension } from './Questionnaire';
+import { Answer } from './Questionnaire';
 
 export enum EnrollmentStatus {
     None = 'none',
@@ -26,10 +26,10 @@ export class Enrollment extends HackathonBase {
     @Column({ type: 'simple-enum', enum: EnrollmentStatus })
     status: EnrollmentStatus;
 
-    @Type(() => Extension)
+    @Type(() => Answer)
     @ValidateNested({ each: true })
     @Column('simple-json')
-    extensions: Extension[];
+    form: Answer[];
 }
 
 export class EnrollmentFilter

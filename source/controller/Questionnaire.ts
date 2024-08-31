@@ -2,41 +2,37 @@ import {
     Authorized,
     Body,
     CurrentUser,
-    Delete,
     Get,
-    HttpCode,
     JsonController,
     NotFoundError,
     OnNull,
-    OnUndefined,
     Param,
-    Patch,
-    Post
+    Put
 } from 'routing-controllers';
 import { ResponseSchema } from 'routing-controllers-openapi';
 
-import { dataSource, Hackathon, Questionnaire, User } from '../model';
+import { dataSource, Hackathon, Questionnaire, Standard, User } from '../model';
 import { ActivityLogController } from './ActivityLog';
 import { HackathonController } from './Hackathon';
 
-const store = dataSource.getRepository(Questionnaire),
+const questionnaireStore = dataSource.getRepository(Questionnaire),
+    standardStore = dataSource.getRepository(Standard),
     hackathonStore = dataSource.getRepository(Hackathon);
 
-@JsonController('/hackathon/:name/questionnaire')
-export class QuestionnaireController {
-    @Get()
+@JsonController('/hackathon/:name')
+export class SurveyController {
+    @Get('/questionnaire')
     @OnNull(404)
     @ResponseSchema(Questionnaire)
-    getOne(@Param('name') name: string) {
-        return store.findOneBy({ hackathon: { name } });
+    getQuestionnaire(@Param('name') name: string) {
+        return questionnaireStore.findOneBy({ hackathon: { name } });
     }
 
-    @Post()
+    @Put('/questionnaire')
     @Authorized()
-    @HttpCode(201)
     @ResponseSchema(Questionnaire)
-    async createOne(
-        @CurrentUser() createdBy: User,
+    async updateQuestionnaire(
+        @CurrentUser() user: User,
         @Param('name') name: string,
         @Body() form: Questionnaire
     ) {
@@ -44,62 +40,66 @@ export class QuestionnaireController {
 
         if (!hackathon) throw new NotFoundError();
 
-        await HackathonController.ensureAdmin(createdBy.id, name);
+        await HackathonController.ensureAdmin(user.id, name);
 
-        const saved = await store.save({ ...form, hackathon, createdBy });
+        const old = await this.getQuestionnaire(name);
 
-        await ActivityLogController.logCreate(
-            createdBy,
-            'Questionnaire',
-            saved.id
-        );
+        const saved = await questionnaireStore.save({
+            ...old,
+            ...form,
+            hackathon,
+            ...(old ? { updatedBy: user } : { createdBy: user })
+        });
+
+        if (old)
+            await ActivityLogController.logUpdate(
+                user,
+                'Questionnaire',
+                saved.id
+            );
+        else
+            await ActivityLogController.logCreate(
+                user,
+                'Questionnaire',
+                saved.id
+            );
         return saved;
     }
 
-    @Patch()
+    @Get('/standard')
+    @OnNull(404)
+    @ResponseSchema(Standard)
+    getStandard(@Param('name') name: string) {
+        return standardStore.findOneBy({ hackathon: { name } });
+    }
+
+    @Put('/standard')
     @Authorized()
-    @ResponseSchema(Questionnaire)
-    async updateOne(
-        @CurrentUser() updatedBy: User,
+    @ResponseSchema(Standard)
+    async updateStandard(
+        @CurrentUser() user: User,
         @Param('name') name: string,
-        @Body() { extensions }: Questionnaire
+        @Body() form: Standard
     ) {
-        const old = await this.getOne(name);
+        const hackathon = await hackathonStore.findOneBy({ name });
 
-        if (!old) throw new NotFoundError();
+        if (!hackathon) throw new NotFoundError();
 
-        await HackathonController.ensureAdmin(updatedBy.id, name);
+        await HackathonController.ensureAdmin(user.id, name);
 
-        const saved = await store.save({ extensions, updatedBy });
+        const old = await this.getStandard(name);
 
-        await ActivityLogController.logUpdate(
-            updatedBy,
-            'Questionnaire',
-            old.id
-        );
+        const saved = await standardStore.save({
+            ...old,
+            ...form,
+            hackathon,
+            ...(old ? { updatedBy: user } : { createdBy: user })
+        });
+
+        if (old)
+            await ActivityLogController.logUpdate(user, 'Standard', saved.id);
+        else await ActivityLogController.logCreate(user, 'Standard', saved.id);
+
         return saved;
-    }
-
-    @Delete()
-    @Authorized()
-    @OnUndefined(204)
-    async deleteOne(
-        @CurrentUser() deletedBy: User,
-        @Param('name') name: string
-    ) {
-        const old = await this.getOne(name);
-
-        if (!old) throw new NotFoundError();
-
-        await HackathonController.ensureAdmin(deletedBy.id, name);
-
-        await store.save({ ...old, deletedBy });
-        await store.softDelete(old.id);
-
-        await ActivityLogController.logDelete(
-            deletedBy,
-            'Questionnaire',
-            old.id
-        );
     }
 }

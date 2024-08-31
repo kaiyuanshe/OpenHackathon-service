@@ -19,7 +19,6 @@ import {
 import { ResponseSchema } from 'routing-controllers-openapi';
 
 import {
-    Award,
     dataSource,
     Hackathon,
     JWTAction,
@@ -29,7 +28,7 @@ import {
     UserFilter,
     UserListChunk
 } from '../model';
-import { APP_SECRET, searchConditionOf } from '../utility';
+import { searchConditionOf } from '../utility';
 
 @JsonController('/hackathon/:hackathon/award/:award')
 export class AwardController {

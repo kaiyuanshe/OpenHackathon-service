@@ -11,12 +11,12 @@ import { useKoaServer } from 'routing-controllers';
 import {
     BaseController,
     mocker,
-    router,
+    controllers,
     swagger,
     UserController
 } from './controller';
 import { dataSource } from './model';
-import { JWT_SECRET, isProduct, PORT } from './utility';
+import { isProduct, JWT_SECRET, PORT } from './utility';
 
 const HOST = `localhost:${PORT}`,
     app = new Koa()
@@ -27,7 +27,7 @@ const HOST = `localhost:${PORT}`,
 if (!isProduct) app.use(mocker());
 
 useKoaServer(app, {
-    ...router,
+    controllers,
     cors: true,
     authorizationChecker: action => !!UserController.getSession(action),
     currentUserChecker: UserController.getSession

@@ -50,7 +50,7 @@ export class AwardController {
         @Param('pictures') pictures: Media[]
     ) {
         const hackathon = await this.hackathonStore.findOneBy({ name });
-        if (hackathon) throw new ForbiddenError('Award already exists');
+        if (!hackathon) throw new NotFoundError('Hackathon not found');
 
         const saved = await this.store.save({
             name,
@@ -60,5 +60,26 @@ export class AwardController {
             pictures
         });
         return saved;
+    }
+
+    @Get('/:hackathonName/:awardId')
+    @OnNull(404)
+    @ResponseSchema(Award)
+    async getOne(
+        @Param('hackathonName') hackathonName: string,
+        @Param('awardId') awardId: number
+    ) {
+        const award = await this.store
+            .createQueryBuilder('award')
+            .innerJoinAndSelect('award.hackathon', 'hackathon')
+            .where('hackathon.name = :hackathonName', { hackathonName })
+            .andWhere('award.id = :awardId', { awardId })
+            .getOne();
+
+        if (!award) {
+            return null;
+        }
+
+        return award;
     }
 }

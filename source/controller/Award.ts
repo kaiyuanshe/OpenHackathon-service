@@ -13,6 +13,7 @@ import {
     OnNull,
     OnUndefined,
     Param,
+    Patch,
     Post,
     Put,
     QueryParams
@@ -81,5 +82,35 @@ export class AwardController {
         }
 
         return award;
+    }
+
+    @Patch('/:hackathonName/:awardId')
+    @Authorized()
+    @ResponseSchema(Award)
+    async updateOne(
+        @Param('hackathonName') hackathonName: string,
+        @Param('awardId') awardId: number,
+        @Body()
+        updateData: Partial<
+            Pick<
+                Award,
+                'name' | 'description' | 'quantity' | 'target' | 'pictures'
+            >
+        >
+    ) {
+        const award = await this.store
+            .createQueryBuilder('award')
+            .innerJoinAndSelect('award.hackathon', 'hackathon')
+            .where('hackathon.name = :hackathonName', { hackathonName })
+            .andWhere('award.id = :awardId', { awardId })
+            .getOne();
+
+        if (!award) throw new NotFoundError('Award not found');
+
+        // use Object.assign update data
+        Object.assign(award, updateData);
+
+        const saved = await this.store.save(award);
+        return saved;
     }
 }

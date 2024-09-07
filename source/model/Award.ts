@@ -14,25 +14,25 @@ import { User } from './User';
 export class Award extends Base {
     @IsString()
     @Column()
-    hackathonName: string;
-
-    @IsString()
-    @Column()
     name: string;
 
     @IsString()
+    @IsOptional()
     @Column()
     description: string;
 
     @IsInt()
+    @IsOptional()
     @Column()
     quantity: number;
 
     @IsString()
+    @IsOptional()
     @Column()
     target: 'team' | 'individual';
 
     @Column()
+    @IsOptional()
     pictures: Media[];
 }
 

@@ -22,7 +22,7 @@ jobs:
                   cache: pnpm
             - name: Install, Build & Publish
               run: |
-                  pnpm i  &&  pnpm build
+                  pnpm i  &&  npm test
                   cd type/
                   npm publish
               env:

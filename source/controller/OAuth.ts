@@ -25,7 +25,7 @@ export class OauthController {
             oldPofile = { name: user.name, avatar: user.avatar };
 
         if (!isDeepStrictEqual(oldPofile, newProfile)) {
-            await store.update(user.id, newProfile);
+            await store.save(Object.assign(user, newProfile));
 
             await ActivityLogController.logUpdate(user, 'User', user.id);
         }

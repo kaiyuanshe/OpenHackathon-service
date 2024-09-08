@@ -1,9 +1,6 @@
-import { client, startServer, stopServer } from './shared';
+import { client } from './shared';
 
 describe('Base controller', () => {
-    beforeAll(startServer);
-    afterAll(stopServer);
-
     it('should echo Server entries in HTML', async () => {
         const { body } = await client.get<string>(
             '/',
@@ -27,7 +24,6 @@ describe('Base controller', () => {
             {},
             { responseType: 'text' }
         );
-
         expect(status).toBe(200);
         expect(body).toBe('');
     });

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { config } from 'dotenv';
+import { ProxyAgent, setGlobalDispatcher } from 'undici';
 
 config({ path: [`.env.${process.env.NODE_ENV}.local`, '.env.local', '.env'] });
 
@@ -16,7 +17,9 @@ import {
     UserController
 } from './controller';
 import { dataSource } from './model';
-import { isProduct, JWT_SECRET, PORT } from './utility';
+import { HTTP_PROXY, isProduct, JWT_SECRET, PORT } from './utility';
+
+if (HTTP_PROXY) setGlobalDispatcher(new ProxyAgent(HTTP_PROXY));
 
 const HOST = `localhost:${PORT}`,
     app = new Koa()

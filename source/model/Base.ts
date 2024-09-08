@@ -58,7 +58,7 @@ export abstract class Base {
 
     @IsDateString()
     @IsOptional()
-    @DeleteDateColumn()
+    @DeleteDateColumn({ select: false })
     deletedAt?: string;
 }
 

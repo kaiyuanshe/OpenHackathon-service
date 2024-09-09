@@ -34,6 +34,7 @@ export class Award extends Base {
     @Column()
     @IsOptional()
     pictures: Media[];
+    hackathon: any;
 }
 
 export interface AwardAssignment

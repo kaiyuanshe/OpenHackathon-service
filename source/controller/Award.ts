@@ -33,6 +33,8 @@ import {
     Media
 } from '../model';
 import { searchConditionOf } from '../utility';
+import { HackathonController } from './Hackathon';
+import { ActivityLogController } from './ActivityLog';
 
 @JsonController('/hackathon/:hackathon/award/:award')
 export class AwardController {
@@ -112,5 +114,32 @@ export class AwardController {
 
         const saved = await this.store.save(award);
         return saved;
+    }
+
+    @Delete('/:hackathonName/:announcementId')
+    @Authorized()
+    @OnUndefined(204)
+    @ResponseSchema(Award)
+    async deleteOne(
+        @CurrentUser() deletedBy: User,
+        @Param('hackathonName') hackathonName: string,
+        @Param('awardId') awardId: number
+    ) {
+        const award = await this.store
+            .createQueryBuilder('award')
+            .innerJoinAndSelect('award.hackathon', 'hackathon')
+            .where('hackathon.name = :hackathonName', { hackathonName })
+            .andWhere('award.id = :awardId', { awardId })
+            .getOne();
+
+        if (!award) throw new NotFoundError('Award not found');
+
+        await HackathonController.ensureAdmin(
+            award.hackathon.createdBy.id,
+            hackathonName
+        );
+        await this.store.softDelete(award.id);
+
+        await ActivityLogController.logDelete(deletedBy, 'Award', award.id);
     }
 }

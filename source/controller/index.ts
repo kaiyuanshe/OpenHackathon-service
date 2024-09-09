@@ -5,6 +5,7 @@ import { isProduct } from '../utility';
 import { BaseController } from './Base';
 import { UserController } from './User';
 import { OauthController } from './OAuth';
+import { PlatformAdminController } from './PlatformAdmin';
 import { ActivityLogController } from './ActivityLog';
 import { HackathonController } from './Hackathon';
 import { StaffController } from './Staff';
@@ -21,6 +22,7 @@ import { EvaluationController } from './Evaluation';
 export * from './Base';
 export * from './User';
 export * from './OAuth';
+export * from './PlatformAdmin';
 export * from './ActivityLog';
 export * from './Hackathon';
 export * from './Staff';
@@ -34,23 +36,26 @@ export * from './TeamMember';
 export * from './TeamWork';
 export * from './Evaluation';
 
+export const controllers = [
+    OauthController,
+    UserController,
+    PlatformAdminController,
+    ActivityLogController,
+    StaffController,
+    OrganizerController,
+    EnrollmentController,
+    SurveyController,
+    GitTemplateController,
+    AnnouncementController,
+    EvaluationController,
+    TeamWorkController,
+    TeamMemberController,
+    TeamController,
+    HackathonController,
+    BaseController
+];
+
 export const { swagger, mocker, router } = createAPI({
     mock: !isProduct,
-    controllers: [
-        OauthController,
-        UserController,
-        ActivityLogController,
-        StaffController,
-        OrganizerController,
-        EnrollmentController,
-        SurveyController,
-        GitTemplateController,
-        AnnouncementController,
-        EvaluationController,
-        TeamWorkController,
-        TeamMemberController,
-        TeamController,
-        HackathonController,
-        BaseController
-    ]
+    controllers
 });

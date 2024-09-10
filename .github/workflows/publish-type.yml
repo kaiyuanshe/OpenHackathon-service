@@ -20,6 +20,11 @@ jobs:
                   node-version: 20
                   registry-url: https://npm.pkg.github.com
                   cache: pnpm
+            - name: Inject Environment variables
+              run: |
+                  cat > .env <<EOF
+                  ${{ secrets.ENV_FILE }}
+                  EOF
             - name: Install, Build & Publish
               run: |
                   pnpm i  &&  npm test

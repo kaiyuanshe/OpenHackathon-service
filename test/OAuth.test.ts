@@ -1,20 +1,16 @@
-import {
-    ActivityLogListChunk,
-    Operation,
-    User,
-    UserListChunk
-} from '../source/model';
+import { ActivityLogListChunk, Operation, User } from '../source/model';
 import { client, GITHUB_PAT } from './shared';
 
 describe('OAuth controller', () => {
-    it('should sign up a new User with a GitHub token', async () => {
-        const { body: oldList } = await client.get<UserListChunk>('user');
+    var UID: number;
 
-        expect(oldList).toEqual({ count: 0, list: [] });
+    it('should sign up & in a new User with a GitHub token', async () => {
+        const { status, body: session } = await client.post<User>(
+            'user/OAuth/GitHub',
+            { accessToken: GITHUB_PAT }
+        );
+        expect(status).toBe(201);
 
-        const { body: session } = await client.post<User>('user/OAuth/GitHub', {
-            accessToken: GITHUB_PAT
-        });
         expect(session).toMatchObject({
             id: expect.any(Number),
             email: expect.any(String),
@@ -26,28 +22,31 @@ describe('OAuth controller', () => {
             updatedAt: expect.any(Date)
         });
 
-        const { deletedAt, password, token, ...user } = session,
-            { body: newList } = await client.get<UserListChunk>('user');
+        const { deletedAt, password, token, ...user } = session;
 
-        expect(newList).toEqual({ count: 1, list: [user] });
+        const { body } = await client.get<User>(`user/session`, {
+            Authorization: `Bearer ${token}`
+        });
+        expect(body).toMatchObject(user);
     });
 
-    it('should sign in an existed User with a GitHub token', async () => {
-        const { body: list } = await client.get<UserListChunk>('user');
-
-        expect(list).toEqual({ count: 1, list: expect.any(Array) });
-
-        const { body: session } = await client.post<User>('user/OAuth/GitHub', {
+    it('should sign in & update an existed User with a GitHub token', async () => {
+        const { body } = await client.post<User>('user/OAuth/GitHub', {
             accessToken: GITHUB_PAT
         });
-        const { password, token, ...user } = session;
+        const { token, ...user } = body;
 
-        expect(user).toMatchObject(list.list[0]);
+        const { body: session } = await client.get<User>(`user/session`, {
+            Authorization: `Bearer ${token}`
+        });
+        expect(session).toMatchObject(user);
+
+        UID = user.id;
     });
 
     it('should record 2 activities of a new OAuth User', async () => {
         const { body } = await client.get<ActivityLogListChunk>(
-            'activity-log/user/1'
+            'activity-log/user/' + UID
         );
         expect(body).toEqual({
             count: 2,
@@ -56,7 +55,7 @@ describe('OAuth controller', () => {
                     id: expect.any(Number),
                     operation: Operation.Create,
                     tableName: 'User',
-                    recordId: 1,
+                    recordId: UID,
                     record: expect.any(Object),
                     createdAt: expect.any(Date),
                     createdBy: expect.any(Object),
@@ -66,7 +65,7 @@ describe('OAuth controller', () => {
                     id: expect.any(Number),
                     operation: Operation.Update,
                     tableName: 'User',
-                    recordId: 1,
+                    recordId: UID,
                     record: expect.any(Object),
                     createdAt: expect.any(Date),
                     createdBy: expect.any(Object),

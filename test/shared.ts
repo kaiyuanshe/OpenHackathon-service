@@ -8,4 +8,11 @@ export const client = new HTTPClient({
     responseType: 'json'
 });
 
-export const header = { Authorization: `Bearer ${GITHUB_PAT}` };
+export const TestAccount = {
+    email: 'test@example.com',
+    password: '1234567890'
+};
+export const header: Record<string, string> = {};
+
+export const setToken = (token: string) =>
+    (header.Authorization = `Bearer ${token}`);

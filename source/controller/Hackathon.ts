@@ -11,8 +11,8 @@ import {
     OnNull,
     OnUndefined,
     Param,
-    Patch,
     Post,
+    Put,
     QueryParams
 } from 'routing-controllers';
 import { ResponseSchema } from 'routing-controllers-openapi';
@@ -21,6 +21,7 @@ import {
     dataSource,
     Hackathon,
     HackathonFilter,
+    HackathonInput,
     HackathonListChunk,
     StaffType,
     User
@@ -37,7 +38,7 @@ const store = dataSource.getRepository(Hackathon);
 export class HackathonController {
     static async ensureAdmin(userId: number, hackathonName: string) {
         if (
-            !(await StaffController.isAdmin(userId, hackathonName)) ||
+            !(await StaffController.isAdmin(userId, hackathonName)) &&
             !(await PlatformAdminController.isAdmin(userId))
         )
             throw new ForbiddenError();
@@ -53,13 +54,13 @@ export class HackathonController {
             throw new ForbiddenError();
     }
 
-    @Patch('/:name')
+    @Put('/:name')
     @Authorized()
     @ResponseSchema(Hackathon)
     async updateOne(
         @CurrentUser() updatedBy: User,
         @Param('name') name: string,
-        @Body() newData: Hackathon
+        @Body() newData: HackathonInput
     ) {
         const old = await store.findOne({
             where: { name },
@@ -105,10 +106,8 @@ export class HackathonController {
         @CurrentUser() deletedBy: User,
         @Param('name') name: string
     ) {
-        const old = await store.findOne({
-            where: { name },
-            relations: ['createdBy']
-        });
+        const old = await store.findOneBy({ name });
+
         if (!old) throw new NotFoundError();
 
         await HackathonController.ensureAdmin(deletedBy.id, name);
@@ -125,7 +124,7 @@ export class HackathonController {
     @ResponseSchema(Hackathon)
     async createOne(
         @CurrentUser() createdBy: User,
-        @Body() hackathon: Hackathon
+        @Body() hackathon: HackathonInput
     ) {
         const saved = await store.save({ ...hackathon, createdBy });
 

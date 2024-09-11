@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { HTTPClient } from 'koajax';
 
+import { SignUpData, User } from '../source/model';
+
 export const { PORT = 8080, GITHUB_PAT } = process.env;
 
 export const client = new HTTPClient({
@@ -16,3 +18,15 @@ export const header: Record<string, string> = {};
 
 export const setToken = (token: string) =>
     (header.Authorization = `Bearer ${token}`);
+
+export async function initUser(account: SignUpData) {
+    await client.post('user', account);
+
+    const {
+        body: { token, ...user }
+    } = await client.post<User>('user/session', account);
+
+    setToken(token);
+
+    return user;
+}

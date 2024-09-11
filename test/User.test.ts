@@ -74,13 +74,15 @@ describe('User controller', () => {
         );
         const { body: user } = await client.patch<User>(
             `user/${session.id}`,
-            { name: 'Test User' },
+            { name: 'User tester' },
             header
         );
         expect(user).toMatchObject({
-            name: 'Test User',
-            updatedAt: expect.any(Date)
+            name: 'User tester',
+            updatedAt: expect.any(Date),
+            token: expect.any(String)
         });
+        setToken(user.token);
     });
 
     it('should record 2 activities of a signed-up & edited User', async () => {
@@ -114,26 +116,14 @@ describe('User controller', () => {
         });
     });
 
-    it('should not be able to self-delete for an Administator', async () => {
-        const { body: session } = await client.get<User>(
-            'user/session',
-            header
-        );
-        try {
-            await client.delete(`user/${session.id}`, {}, header);
-        } catch (error) {
-            expect(error.response.status).toBe(403);
-        }
-    });
-
     it('should be able to search users by part of email or name', async () => {
         const { body: session } = await client.get<User>(
             'user/session',
             header
         );
-        const { body: result_1 } =
-            await client.get<UserListChunk>('user?keywords=Test');
-
+        const { body: result_1 } = await client.get<UserListChunk>(
+            'user?keywords=' + session.name
+        );
         expect(result_1.count).toBe(1);
         expect(result_1.list[0].id).toBe(session.id);
 

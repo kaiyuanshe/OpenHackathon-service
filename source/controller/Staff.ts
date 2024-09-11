@@ -161,7 +161,7 @@ export class StaffController {
         });
         const [list, count] = await store.findAndCount({
             where,
-            relations: ['user'],
+            relations: ['hackathon', 'user'],
             skip: pageSize * (pageIndex - 1),
             take: pageSize
         });

@@ -9,9 +9,10 @@ import {
 import { Base, Media } from './Base';
 import { Team } from './Team';
 import { User } from './User';
+import { HackathonBase } from './Hackathon';
 
 @Entity()
-export class Award extends Base {
+export class Award extends HackathonBase {
     @IsString()
     @Column()
     name: string;
@@ -34,7 +35,6 @@ export class Award extends Base {
     @Column()
     @IsOptional()
     pictures: Media[];
-    hackathon: any;
 }
 
 export interface AwardAssignment

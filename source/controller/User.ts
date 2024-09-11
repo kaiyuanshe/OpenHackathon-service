@@ -112,7 +112,7 @@ export class UserController {
         });
         await ActivityLogController.logUpdate(updatedBy, 'User', id);
 
-        return saved;
+        return UserController.sign(saved);
     }
 
     @Get('/:id')

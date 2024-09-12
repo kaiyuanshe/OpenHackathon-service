@@ -1,10 +1,13 @@
 import { Day, formatDate } from 'web-utility';
 
-import { Hackathon, HackathonStatus } from '../source/model';
-import { Api, HttpResponse, User } from './client';
-import { GITHUB_PAT } from './shared';
-
-const client = new Api({ baseUrl: 'http://localhost:8080' });
+import {
+    Hackathon,
+    HackathonStatus,
+    Operation,
+    StaffType
+} from '../source/model';
+import { HttpResponse, User } from './client';
+import { client, GITHUB_PAT } from './shared';
 
 var platformAdmin: User,
     hackathonCreator: User,
@@ -12,6 +15,14 @@ var platformAdmin: User,
     teamLeader1: User;
 
 describe('Main business logic', () => {
+    it('should response 401 error with invalid token', async () => {
+        try {
+            await client.user.userControllerGetSession();
+        } catch (error) {
+            expect((error as HttpResponse<any>).status).toBe(401);
+        }
+    });
+
     it('should create the first Administator only by the first User', async () => {
         const platformAdminAccount = {
             email: 'admin@test.com',
@@ -61,12 +72,13 @@ describe('Main business logic', () => {
         expect(session).toMatchObject(user);
     });
 
-    it('should response 401 error with invalid token', async () => {
-        try {
-            await client.user.userControllerGetSession();
-        } catch (error) {
-            expect((error as HttpResponse<any>).status).toBe(401);
-        }
+    it("should get a User's profile by its ID", async () => {
+        const { data: user } = await client.user.userControllerGetOne(
+            hackathonCreator.id
+        );
+        const { password, token, deletedAt, ...profile } = hackathonCreator;
+
+        expect(user).toMatchObject(profile);
     });
 
     it('should edit the profile of signed-in User', async () => {
@@ -82,6 +94,48 @@ describe('Main business logic', () => {
         expect(user.updatedAt).toStrictEqual(expect.any(String));
 
         hackathonCreator = { ...hackathonCreator, ...user };
+    });
+
+    it('should record 2 activities of a signed-up & edited User', async () => {
+        const UID = hackathonCreator.id;
+        const activityLog = {
+                id: expect.any(Number),
+                tableName: 'User',
+                recordId: UID,
+                record: expect.any(Object),
+                createdAt: expect.any(String),
+                createdBy: expect.any(Object),
+                updatedAt: expect.any(String)
+            },
+            { data } =
+                await client.activityLog.activityLogControllerGetUserList(UID);
+
+        expect(data).toMatchObject({
+            count: 2,
+            list: [
+                { ...activityLog, operation: Operation.Create },
+                { ...activityLog, operation: Operation.Update }
+            ]
+        });
+    });
+
+    it('should be able to search users by part of email or name', async () => {
+        const { data: result_1 } = await client.user.userControllerGetList({
+            keywords: platformAdmin.email
+        });
+        expect(result_1.count).toBe(1);
+        expect(result_1.list[0].id).toBe(platformAdmin.id);
+
+        const { data: result_2 } = await client.user.userControllerGetList({
+            keywords: hackathonCreator.name
+        });
+        expect(result_2.count).toBe(1);
+        expect(result_2.list[0].id).toBe(hackathonCreator.id);
+
+        const { data: empty } = await client.user.userControllerGetList({
+            keywords: 'empty'
+        });
+        expect(empty).toEqual({ count: 0, list: [] });
     });
 
     it('should create a new hackathon by every user', async () => {
@@ -134,6 +188,30 @@ describe('Main business logic', () => {
         testHackathon = hackathon;
     });
 
+    it('should auto set the creator as an admin of this hackathon', async () => {
+        const { data: staffList } =
+            await client.hackathon.staffControllerGetList(
+                testHackathon.name,
+                StaffType.Admin
+            );
+        expect(staffList).toMatchObject({
+            count: 1,
+            list: [
+                {
+                    id: expect.any(Number),
+                    type: StaffType.Admin,
+                    user: expect.any(Object),
+                    description: 'Hackathon Creator',
+                    hackathon: expect.any(Object),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String)
+                }
+            ]
+        });
+        expect(staffList.list[0].user.id).toBe(hackathonCreator.id);
+        expect(staffList.list[0].hackathon.id).toBe(testHackathon.id);
+    });
+
     it('should get the detail by a hackathon name', async () => {
         const { data } = await client.hackathon.hackathonControllerGetOne(
             testHackathon.name,
@@ -150,8 +228,9 @@ describe('Main business logic', () => {
         delete testHackathon.roles;
     });
 
-    it('should edit the detail of a hackathon by its creator', async () => {
-        testHackathon.detail += '<p>Updated</p>';
+    it('should update partial information by the hackathon admin', async () => {
+        testHackathon.tags = ['test', 'example'];
+        testHackathon.detail += '<p>Example</p>';
 
         const { data } = await client.hackathon.hackathonControllerUpdateOne(
             testHackathon.name,
@@ -183,15 +262,22 @@ describe('Main business logic', () => {
     it('should search hackathons by keywords', async () => {
         const { data: list } =
             await client.hackathon.hackathonControllerGetList({
-                keywords: 'test'
+                keywords: 'example'
             });
         expect(list).toEqual({ count: 1, list: [testHackathon] });
 
         const { data: empty } =
             await client.hackathon.hackathonControllerGetList({
-                keywords: 'not-exist'
+                keywords: 'none'
             });
         expect(empty).toEqual({ count: 0, list: [] });
+    });
+
+    it('should find hackathon by its creator', async () => {
+        const { data } = await client.hackathon.hackathonControllerGetList({
+            createdBy: hackathonCreator.id
+        });
+        expect(data).toEqual({ count: 1, list: [testHackathon] });
     });
 
     it('should sign up & in a new User with a GitHub token', async () => {
@@ -231,5 +317,25 @@ describe('Main business logic', () => {
         const { data: list2 } = await client.user.userControllerGetList();
 
         expect(list1.count).toBe(list2.count);
+    });
+
+    it('should delete a hackathon by its admin', async () => {
+        const { name } = testHackathon;
+        const { status, data } =
+            await client.hackathon.hackathonControllerDeleteOne(name, {
+                headers: { Authorization: `Bearer ${hackathonCreator.token}` }
+            });
+        expect(status).toBe(204);
+        expect(data).toBeNull();
+
+        try {
+            await client.hackathon.hackathonControllerGetOne(name);
+        } catch (error) {
+            expect((error as HttpResponse<any>).status).toBe(404);
+        }
+        const { data: hackathonList } =
+            await client.hackathon.hackathonControllerGetList();
+
+        expect(hackathonList).toEqual({ count: 0, list: [] });
     });
 });

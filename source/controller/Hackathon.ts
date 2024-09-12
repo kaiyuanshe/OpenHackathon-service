@@ -144,7 +144,14 @@ export class HackathonController {
     @ResponseSchema(HackathonListChunk)
     async getList(
         @QueryParams()
-        { keywords, pageSize, pageIndex, ...filter }: HackathonFilter
+        {
+            keywords,
+            pageSize,
+            pageIndex,
+            createdBy,
+            updatedBy,
+            ...filter
+        }: HackathonFilter
     ) {
         const where = searchConditionOf<Hackathon>(
             [
@@ -157,7 +164,11 @@ export class HackathonController {
                 'tags'
             ],
             keywords,
-            filter
+            {
+                ...filter,
+                createdBy: { id: createdBy },
+                updatedBy: { id: updatedBy }
+            }
         );
         const [list, count] = await store.findAndCount({
             where,

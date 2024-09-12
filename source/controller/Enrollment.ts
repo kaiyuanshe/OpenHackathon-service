@@ -110,13 +110,20 @@ export class EnrollmentController {
     @ResponseSchema(EnrollmentListChunk)
     async getList(
         @QueryParams()
-        { status, keywords, pageSize, pageIndex }: EnrollmentFilter
-    ) {
-        const where = searchConditionOf<Enrollment>(
-            ['form'],
+        {
             keywords,
-            status && { status }
-        );
+            pageSize,
+            pageIndex,
+            status,
+            createdBy,
+            updatedBy
+        }: EnrollmentFilter
+    ) {
+        const where = searchConditionOf<Enrollment>(['form'], keywords, {
+            status,
+            createdBy: { id: createdBy },
+            updatedBy: { id: updatedBy }
+        });
         const [list, count] = await store.findAndCount({
             where,
             relations: ['createdBy'],

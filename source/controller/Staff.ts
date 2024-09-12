@@ -18,10 +18,10 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 
 import {
     Base,
-    BaseFilter,
     dataSource,
     Hackathon,
     Staff,
+    StaffFilter,
     StaffListChunk,
     StaffType,
     User
@@ -153,11 +153,12 @@ export class StaffController {
     async getList(
         @Param('name') name: string,
         @Param('type') type: StaffType,
-        @QueryParams() { keywords, pageSize, pageIndex }: BaseFilter
+        @QueryParams() { keywords, pageSize, pageIndex, user }: StaffFilter
     ) {
         const where = searchConditionOf<Staff>(['description'], keywords, {
             hackathon: { name },
-            type
+            type,
+            user: { id: user }
         });
         const [list, count] = await store.findAndCount({
             where,

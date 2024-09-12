@@ -40,7 +40,7 @@ const store = dataSource.getRepository(Team),
 export class TeamController {
     static async ensureAdmin(userId: number, teamId: number) {
         if (
-            !(await TeamMemberController.isAdmin(userId, teamId)) ||
+            !(await TeamMemberController.isAdmin(userId, teamId)) &&
             !(await PlatformAdminController.isAdmin(userId))
         )
             throw new ForbiddenError();

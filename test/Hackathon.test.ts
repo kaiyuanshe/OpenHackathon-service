@@ -130,6 +130,13 @@ describe('Hackathon controller', () => {
         expect(empty).toEqual({ count: 0, list: [] });
     });
 
+    it('should find hackathon by its creator', async () => {
+        const { body: list } = await client.get<HackathonListChunk>(
+            'hackathon?createdBy=' + creator.id
+        );
+        expect(list).toEqual({ count: 1, list: [testHackathon] });
+    });
+
     it('should delete a hackathon by its admin', async () => {
         const { status, body } = await client.delete(
             'hackathon/' + hackathonName,

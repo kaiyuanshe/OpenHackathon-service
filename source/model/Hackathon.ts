@@ -11,8 +11,8 @@ import {
 } from 'class-validator';
 import { Column, Entity, Index, ManyToOne, VirtualColumn } from 'typeorm';
 
-import { BaseFilter, InputData, ListChunk, Media } from './Base';
-import { UserBase, UserInputData } from './User';
+import { ListChunk, Media } from './Base';
+import { UserBase, UserBaseFilter, UserInputData } from './User';
 
 export enum HackathonStatus {
     Planning = 'planning',
@@ -171,8 +171,8 @@ export class HackathonInput implements UserInputData<Hackathon> {
 }
 
 export class HackathonFilter
-    extends BaseFilter
-    implements Partial<InputData<Hackathon>>
+    extends UserBaseFilter
+    implements Partial<UserInputData<Hackathon>>
 {
     @IsEnum(HackathonStatus)
     @IsOptional()

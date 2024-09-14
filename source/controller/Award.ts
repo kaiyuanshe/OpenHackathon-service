@@ -1,11 +1,8 @@
-import { createHash } from 'crypto';
-import { JsonWebTokenError, sign } from 'jsonwebtoken';
 import {
     Authorized,
     Body,
     CurrentUser,
     Delete,
-    ForbiddenError,
     Get,
     HttpCode,
     JsonController,
@@ -14,25 +11,12 @@ import {
     OnUndefined,
     Param,
     Patch,
-    Post,
-    Put,
-    QueryParams
+    Put
 } from 'routing-controllers';
 import { ResponseSchema } from 'routing-controllers-openapi';
 
-import {
-    dataSource,
-    Hackathon,
-    JWTAction,
-    Role,
-    SignInData,
-    User,
-    UserFilter,
-    UserListChunk,
-    Award,
-    Media
-} from '../model';
-import { searchConditionOf } from '../utility';
+import { dataSource, Hackathon, User, Award, Media } from '../model';
+
 import { HackathonController } from './Hackathon';
 import { ActivityLogController } from './ActivityLog';
 

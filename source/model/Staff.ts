@@ -11,7 +11,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { ListChunk } from './Base';
 import { HackathonBase } from './Hackathon';
-import { User } from './User';
+import { User, UserBaseFilter, UserInputData } from './User';
 
 export enum StaffType {
     Admin = 'admin',
@@ -36,6 +36,16 @@ export class Staff extends HackathonBase {
     @IsOptional()
     @Column({ nullable: true })
     description?: string;
+}
+
+export class StaffFilter
+    extends UserBaseFilter
+    implements Partial<UserInputData<Staff>>
+{
+    @IsInt()
+    @Min(1)
+    @IsOptional()
+    user?: number;
 }
 
 export class StaffListChunk implements ListChunk<Staff> {

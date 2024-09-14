@@ -12,8 +12,8 @@ import {
     OnNull,
     OnUndefined,
     Param,
+    Patch,
     Post,
-    Put,
     QueryParams
 } from 'routing-controllers';
 import { ResponseSchema } from 'routing-controllers-openapi';
@@ -72,6 +72,7 @@ export class UserController {
     }
 
     @Post('/session')
+    @HttpCode(201)
     @ResponseSchema(User)
     async signIn(@Body() { email, password }: SignInData): Promise<User> {
         const user = await store.findOneBy({
@@ -90,13 +91,13 @@ export class UserController {
         return UserController.signUp(data);
     }
 
-    @Put('/:id')
+    @Patch('/:id')
     @Authorized()
     @ResponseSchema(User)
     async updateOne(
         @Param('id') id: number,
         @CurrentUser() updatedBy: User,
-        @Body() data: User
+        @Body() { password, ...data }: User
     ) {
         if (
             !updatedBy.roles.includes(Role.Administrator) &&
@@ -104,11 +105,14 @@ export class UserController {
         )
             throw new ForbiddenError();
 
-        const saved = await store.save({ ...data, id });
-
+        const saved = await store.save({
+            ...data,
+            password: password && UserController.encrypt(password),
+            id
+        });
         await ActivityLogController.logUpdate(updatedBy, 'User', id);
 
-        return saved;
+        return UserController.sign(saved);
     }
 
     @Get('/:id')
@@ -122,10 +126,7 @@ export class UserController {
     @Authorized()
     @OnUndefined(204)
     async deleteOne(@Param('id') id: number, @CurrentUser() deletedBy: User) {
-        if (
-            !deletedBy.roles.includes(Role.Administrator) ||
-            id !== deletedBy.id
-        )
+        if (deletedBy.roles.includes(Role.Administrator) && id == deletedBy.id)
             throw new ForbiddenError();
 
         await store.softDelete(id);

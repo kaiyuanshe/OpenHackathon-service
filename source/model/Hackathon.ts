@@ -11,8 +11,8 @@ import {
 } from 'class-validator';
 import { Column, Entity, Index, ManyToOne, VirtualColumn } from 'typeorm';
 
-import { BaseFilter, InputData, ListChunk, Media } from './Base';
-import { UserBase } from './User';
+import { ListChunk, Media } from './Base';
+import { UserBase, UserBaseFilter, UserInputData } from './User';
 
 export enum HackathonStatus {
     Planning = 'planning',
@@ -23,42 +23,31 @@ export enum HackathonStatus {
 
 @Entity()
 export class Hackathon extends UserBase {
-    @IsString()
     @Column()
     @Index({ unique: true })
     name: string;
 
-    @IsString()
     @Column({ unique: true })
     displayName: string;
 
-    @IsString()
     @Column()
     ribbon: string;
 
-    @IsString({ each: true })
     @Column('simple-json')
     tags: string[];
 
-    @IsString()
     @Column()
     summary: string;
 
-    @IsString()
     @Column('text')
     detail: string;
 
-    @IsString()
     @Column()
     location: string;
 
-    @Type(() => Media)
-    @ValidateNested({ each: true })
     @Column('simple-json')
     banners: Media[];
 
-    @IsEnum(HackathonStatus)
-    @IsOptional()
     @Column({
         type: 'simple-enum',
         enum: HackathonStatus,
@@ -66,51 +55,36 @@ export class Hackathon extends UserBase {
     })
     status?: HackathonStatus = HackathonStatus.Planning;
 
-    @IsBoolean()
-    @IsOptional()
     @Column('boolean', { default: false })
     readOnly?: boolean = false;
 
-    @IsBoolean()
-    @IsOptional()
     @Column('boolean', { default: true })
     autoApprove?: boolean = true;
 
-    @IsInt()
-    @Min(0)
-    @IsOptional()
     @Column({ nullable: true })
     maxEnrollment?: number;
 
-    @IsInt()
-    @Min(0)
     @VirtualColumn({
         query: alias =>
             `SELECT COUNT(*) FROM "enrollment" WHERE "enrollment"."hackathonId" = ${alias}.id`
     })
     enrollment: number;
 
-    @IsDateString()
     @Column('date')
     eventStartedAt: string;
 
-    @IsDateString()
     @Column('date')
     eventEndedAt: string;
 
-    @IsDateString()
     @Column('date')
     enrollmentStartedAt: string;
 
-    @IsDateString()
     @Column('date')
     enrollmentEndedAt: string;
 
-    @IsDateString()
     @Column('date')
     judgeStartedAt: string;
 
-    @IsDateString()
     @Column('date')
     judgeEndedAt: string;
 
@@ -129,14 +103,77 @@ export abstract class HackathonBase extends UserBase {
     hackathon: Hackathon;
 }
 
-export class HackathonFilter
-    extends BaseFilter
-    implements Partial<InputData<Hackathon>>
-{
+export class HackathonInput implements UserInputData<Hackathon> {
     @IsString()
-    @IsOptional()
-    name?: string;
+    name: string;
 
+    @IsString()
+    displayName: string;
+
+    @IsString()
+    ribbon: string;
+
+    @IsString({ each: true })
+    tags: string[];
+
+    @IsString()
+    summary: string;
+
+    @IsString()
+    detail: string;
+
+    @IsString()
+    location: string;
+
+    @Type(() => Media)
+    @ValidateNested({ each: true })
+    banners: Media[];
+
+    @IsEnum(HackathonStatus)
+    @IsOptional()
+    status?: HackathonStatus = HackathonStatus.Planning;
+
+    @IsBoolean()
+    @IsOptional()
+    readOnly?: boolean = false;
+
+    @IsBoolean()
+    @IsOptional()
+    autoApprove?: boolean = true;
+
+    @IsInt()
+    @Min(0)
+    @IsOptional()
+    maxEnrollment?: number;
+
+    @IsInt()
+    @Min(0)
+    @IsOptional()
+    enrollment: number;
+
+    @IsDateString()
+    eventStartedAt: string;
+
+    @IsDateString()
+    eventEndedAt: string;
+
+    @IsDateString()
+    enrollmentStartedAt: string;
+
+    @IsDateString()
+    enrollmentEndedAt: string;
+
+    @IsDateString()
+    judgeStartedAt: string;
+
+    @IsDateString()
+    judgeEndedAt: string;
+}
+
+export class HackathonFilter
+    extends UserBaseFilter
+    implements Partial<UserInputData<Hackathon>>
+{
     @IsEnum(HackathonStatus)
     @IsOptional()
     status?: HackathonStatus;

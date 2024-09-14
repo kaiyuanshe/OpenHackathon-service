@@ -8,9 +8,10 @@ import {
 } from 'class-validator';
 import { Column, Entity } from 'typeorm';
 
-import { BaseFilter, InputData, ListChunk } from './Base';
+import { ListChunk } from './Base';
 import { HackathonBase } from './Hackathon';
 import { Answer } from './Questionnaire';
+import { UserBaseFilter, UserInputData } from './User';
 
 export enum EnrollmentStatus {
     None = 'none',
@@ -33,8 +34,8 @@ export class Enrollment extends HackathonBase {
 }
 
 export class EnrollmentFilter
-    extends BaseFilter
-    implements Partial<InputData<Enrollment>>
+    extends UserBaseFilter
+    implements Partial<UserInputData<Enrollment>>
 {
     @IsEnum(EnrollmentStatus)
     @IsOptional()

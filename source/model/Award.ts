@@ -1,11 +1,5 @@
 import { Column, Entity, ManyToOne } from 'typeorm';
-import {
-    IsInt,
-    IsOptional,
-    isString,
-    IsString,
-    ValidateNested
-} from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 import { Base, Media } from './Base';
 import { Team } from './Team';
 import { User } from './User';

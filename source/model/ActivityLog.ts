@@ -22,6 +22,7 @@ import { Team } from './Team';
 import { TeamMember } from './TeamMember';
 import { TeamWork } from './TeamWork';
 import { User, UserBase } from './User';
+import { Award } from './Award';
 
 export enum Operation {
     Create = 'create',
@@ -43,7 +44,8 @@ export const LogableTable = {
     Team,
     TeamMember,
     TeamWork,
-    Evaluation
+    Evaluation,
+    Award
 };
 const LogableTableEnum = Object.fromEntries(
     Object.entries(LogableTable).map(([key]) => [key, key])

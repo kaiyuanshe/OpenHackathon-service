@@ -32,6 +32,7 @@ export * from './Enrollment';
 export * from './Team';
 export * from './TeamMember';
 export * from './TeamWork';
+export * from './Award';
 
 const { ssl, host, port, user, password, database } = isProduct
     ? parse(DATABASE_URL)

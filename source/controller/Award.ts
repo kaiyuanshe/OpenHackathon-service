@@ -20,7 +20,7 @@ import { dataSource, Hackathon, User, Award, Media } from '../model';
 import { HackathonController } from './Hackathon';
 import { ActivityLogController } from './ActivityLog';
 
-@JsonController('/hackathon/:hackathon/award/:award')
+@JsonController('/hackathon/:hackathonName/award/:awardId')
 export class AwardController {
     store = dataSource.getRepository(Award);
     hackathonStore = dataSource.getRepository(Hackathon);
